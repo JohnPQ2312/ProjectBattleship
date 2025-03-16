@@ -5,25 +5,28 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
+import javafx.scene.image.Image;
 import java.io.IOException;
 
-/**
- * JavaFX App
- */
 public class App extends Application {
 
     private static Scene scene;
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"), 640, 480);
+        scene = new Scene(loadFXML("primary"));
         stage.setScene(scene);
+        var appIcon = new Image("/images/ship.png");
+        stage.getIcons().add(appIcon);
+        stage.setTitle("Batalla Naval");
+        stage.setWidth(820);
+        stage.setHeight(740);
         stage.show();
     }
 
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
+        Stage stage = (Stage) scene.getWindow();
     }
 
     private static Parent loadFXML(String fxml) throws IOException {

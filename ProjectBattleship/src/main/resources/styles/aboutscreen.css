@@ -1,0 +1,23 @@
+/*
+ * Empty Stylesheet file.
+ */
+
+.anchor-pane{
+    -fx-background-color: #2E4053;
+    -fx-background-image: url("/images/menuScreenImage.png");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+    -fx-border-color: white;
+    -fx-border-width: 2px;
+}
+
+.titulo-label-fondo{
+    -fx-background-color: #ffffff;
+    -fx-opacity: 1;
+    -fx-font-size: 30.0px;
+    -fx-padding: 5 0 5 0;
+    -fx-text-fill: white;
+    -fx-font-weight: bold; 
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 2, 0.0, 1, 2);
+}
+

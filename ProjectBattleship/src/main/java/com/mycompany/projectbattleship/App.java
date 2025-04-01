@@ -19,8 +19,6 @@ public class App extends Application {
         var appIcon = new Image("/images/ship.png");
         stage.getIcons().add(appIcon);
         stage.setTitle("Batalla Naval");
-        stage.setWidth(820);
-        stage.setHeight(740);
         stage.setResizable(false);
         stage.show();
     }

@@ -6,7 +6,10 @@ package com.mycompany.projectbattleship;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.ResourceBundle;
+import java.util.Set;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -28,6 +31,9 @@ public class DifficultyScreenController implements Initializable {
     @FXML
     private TextField enterName;
     String name;
+    String difficult;
+    
+    boolean rbConfirmed, nameConfirmed;
     
     @FXML
     private Button confirmButton;
@@ -43,24 +49,47 @@ public class DifficultyScreenController implements Initializable {
     }
     
     @FXML
-    private void confirmSelection() throws IOException{
-        if (rbEasy.isSelected()){
-            App.setRoot("easyMode");
+    private void confirmSelection() throws IOException {
+        name = enterName.getText();
+
+        if (rbEasy.isSelected()) {
+            difficult = "Easy";
+        } else if (rbMedium.isSelected()) {
+            difficult = "Medium";
+        } else if (rbHard.isSelected()) {
+            difficult = "Hard";
+        }
+
+        int boardSize = getBoardSize(difficult);
+
+        GameTableController.setBoardSize(boardSize);
+
+        App.setRoot("gameTable");
+    }
+
+    // Método auxiliar para obtener el tamaño del tablero
+    private int getBoardSize(String difficulty) {
+        switch (difficulty) {
+            case "Easy":
+                return 8;
+            case "Medium":
+                return 12;
+            case "Hard":
+                return 16;
+            default:
+                return 5; // Tamaño por defecto
         }
     }
     
-    @FXML
-    private void saveName(){
-        name = enterName.getText();
-        
-        if (!name.isEmpty()) {
-            saveName.setDisable(true);
-            enterName.setDisable(true);
-            rbEasy.setDisable(false);
-            rbMedium.setDisable(true); //AUN NO USAR
-            rbHard.setDisable(true); // AUN NO USAR
-        }
-    };
+    public void updateButtonState(String field, ToggleGroup rbGroup, Button confirmButton) {
+        Runnable updateState = () -> {
+            boolean nameConfirmed = !field.isEmpty();
+            boolean rbConfirmed = rbGroup.getSelectedToggle() != null;
+
+            confirmButton.setDisable(!(nameConfirmed && rbConfirmed)); 
+        };
+        updateState.run();
+    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -68,21 +97,16 @@ public class DifficultyScreenController implements Initializable {
         rbEasy.setToggleGroup(rbGroup);
         rbMedium.setToggleGroup(rbGroup);
         rbHard.setToggleGroup(rbGroup);
-
-        rbEasy.setDisable(true);
-        rbMedium.setDisable(true);
-        rbHard.setDisable(true);
-        confirmButton.setDisable(true);
-        saveName.setDisable(true);
         
-        enterName.textProperty().addListener((observable, oldValue, newValue) -> {
-            boolean isNotEmpty = !newValue.trim().isEmpty();
-            saveName.setDisable(!isNotEmpty);
-        });
+        confirmButton.setDisable(true);
+        
+        ChangeListener<Object> updateListener = (observable, oldValue, newValue) -> {
+            updateButtonState(enterName.getText(), rbGroup, confirmButton);
+        };
 
+        enterName.textProperty().addListener(updateListener);
+        rbGroup.selectedToggleProperty().addListener(updateListener);
 
-        rbGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            confirmButton.setDisable(newValue == null);
-        });
-    }    
+    }
+
 }

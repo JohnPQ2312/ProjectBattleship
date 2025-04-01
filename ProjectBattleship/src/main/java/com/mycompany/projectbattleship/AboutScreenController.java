@@ -10,6 +10,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.layout.AnchorPane;
 
 /**
  * FXML Controller class
@@ -19,17 +20,13 @@ import javafx.scene.control.Button;
 public class AboutScreenController implements Initializable {
 
     @FXML
-    private Button btnBackAbout;
-    
-    
-    @FXML
     private void backAbout() throws IOException{
         App.setRoot("menuScreen");
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        
     }    
     
 }

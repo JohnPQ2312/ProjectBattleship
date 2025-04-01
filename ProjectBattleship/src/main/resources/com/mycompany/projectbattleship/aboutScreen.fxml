@@ -6,29 +6,29 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="693.0" prefWidth="812.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.projectbattleship.AboutScreenController">
+<AnchorPane id="AnchorPane" prefHeight="850.0" prefWidth="1077.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.projectbattleship.AboutScreenController">
    <children>
-      <Text fill="WHITE" layoutX="248.0" layoutY="272.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="titulo-label-fondo" text="Hecho por: John Perez">
+      <Text fill="WHITE" layoutX="367.0" layoutY="336.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="titulo-label-fondo" text="Hecho por: John Perez">
          <font>
             <Font size="30.0" />
          </font>
       </Text>
-      <Text fill="WHITE" layoutX="250.0" layoutY="155.0" strokeType="OUTSIDE" strokeWidth="0.0" text="BATALLA NAVAL">
+      <Text fill="WHITE" layoutX="371.0" layoutY="222.0" strokeType="OUTSIDE" strokeWidth="0.0" text="BATALLA NAVAL">
          <font>
             <Font size="42.0" />
          </font>
       </Text>
-      <Text fill="WHITE" layoutX="261.0" layoutY="358.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="titulo-label-fondo" text="Lenguajes: Java, CSS">
+      <Text fill="WHITE" layoutX="381.0" layoutY="416.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="titulo-label-fondo" text="Lenguajes: Java, CSS">
          <font>
             <Font size="30.0" />
          </font>
       </Text>
-      <Text fill="WHITE" layoutX="251.0" layoutY="453.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="titulo-label-fondo" text="GitHub: JohnPQ2312" wrappingWidth="309.8525390625">
+      <Text fill="WHITE" layoutX="370.0" layoutY="518.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="titulo-label-fondo" text="GitHub: JohnPQ2312" wrappingWidth="309.8525390625">
          <font>
             <Font size="30.0" />
          </font>
       </Text>
-      <Text fill="WHITE" layoutX="226.0" layoutY="603.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Proyecto de codigo abierto" underline="true">
+      <Text fill="WHITE" layoutX="344.0" layoutY="667.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Proyecto de codigo abierto" underline="true">
          <font>
             <Font size="30.0" />
          </font>
@@ -36,7 +36,6 @@
       <Button fx:id="btnBackAbout" layoutX="36.0" layoutY="31.0" mnemonicParsing="false" onAction="#backAbout" prefHeight="55.0" prefWidth="138.0" text="VOLVER" />
    </children>
    <stylesheets>
-      <URL value="@../../../styles/Style.css" />
       <URL value="@../../../styles/aboutscreen.css" />
    </stylesheets>
 </AnchorPane>

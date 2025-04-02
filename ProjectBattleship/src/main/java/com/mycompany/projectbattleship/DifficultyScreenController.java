@@ -51,33 +51,33 @@ public class DifficultyScreenController implements Initializable {
     @FXML
     private void confirmSelection() throws IOException {
         name = enterName.getText();
-
+        
         if (rbEasy.isSelected()) {
-            difficult = "Easy";
+            difficult = "FACIL";
         } else if (rbMedium.isSelected()) {
-            difficult = "Medium";
+            difficult = "MEDIO";
         } else if (rbHard.isSelected()) {
-            difficult = "Hard";
+            difficult = "DIFICIL";
         }
 
+        GameState.setPlayerName(name);
+        GameState.setDifficulty(difficult);
+        
         int boardSize = getBoardSize(difficult);
-
         GameTableController.setBoardSize(boardSize);
-
         App.setRoot("gameTable");
     }
 
-    // Método auxiliar para obtener el tamaño del tablero
     private int getBoardSize(String difficulty) {
         switch (difficulty) {
-            case "Easy":
+            case "FACIL":
                 return 8;
-            case "Medium":
+            case "MEDIO":
                 return 12;
-            case "Hard":
+            case "DIFICIL":
                 return 16;
             default:
-                return 5; // Tamaño por defecto
+                return 8;
         }
     }
     

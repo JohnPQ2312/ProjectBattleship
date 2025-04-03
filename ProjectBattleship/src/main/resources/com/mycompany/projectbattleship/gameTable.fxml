@@ -33,6 +33,11 @@
       <Button fx:id="btnRotate" layoutX="43.0" layoutY="598.0" mnemonicParsing="false" onAction="#rotateShip" prefHeight="30.0" prefWidth="79.0" text="Rotar barco" />
       <Label fx:id="orientation" layoutX="13.0" layoutY="644.0" text="Orientación: HORIZONTAL" />
       <Label layoutX="61.0" layoutY="36.0" text="Nombre" />
+      <Label fx:id="subCount" layoutX="310.0" layoutY="53.0" text="Submarinos: 4" />
+      <Label fx:id="destCount" layoutX="430.0" layoutY="53.0" text="Destructores: 3" />
+      <Label fx:id="cruisCount" layoutX="545.0" layoutY="53.0" text="Cruceros: 2" />
+      <Label fx:id="b_shipCount" layoutX="639.0" layoutY="53.0" text="Acorazados: 1" />
+
       <TextField fx:id="playerNameField" layoutX="9.0" layoutY="61.0" />
       <TextField fx:id="difficultyField" layoutX="9.0" layoutY="138.0" />
       <Label layoutX="57.0" layoutY="113.0" text="Dificultad" />

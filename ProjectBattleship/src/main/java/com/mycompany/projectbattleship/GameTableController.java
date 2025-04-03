@@ -39,11 +39,16 @@ public class GameTableController implements Initializable {
     @FXML
     private Button btnRotate;
     @FXML
-    private Label orientation;
+    private Label orientation, subCount, destCount, cruisCount, b_shipCount;
     @FXML
     private TextField playerNameField, difficultyField;
     
     private static int boardSize = 8;
+    
+    private int remainingSubmarines = 4;
+    private int remainingDestroyers = 3;
+    private int remainingCruisers = 2;
+    private int remainingBattleships = 1;
 
     public static void setBoardSize(int size) {
         boardSize = size;
@@ -51,6 +56,11 @@ public class GameTableController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        subCount.setText("Submarinos: " + remainingSubmarines);
+        destCount.setText("Destructores: " + remainingDestroyers);
+        cruisCount.setText("Cruceros: " + remainingCruisers);
+        b_shipCount.setText("Acorazados: " + remainingBattleships);
+        
         String playerName = GameState.getPlayerName();
         playerNameField.setText(playerName);
         playerNameField.setEditable(false);        
@@ -76,8 +86,19 @@ public class GameTableController implements Initializable {
         Platform.runLater(() -> centerBoard());
     }
 
+    private boolean hasRemainingShip(Ship ship) {
+        switch(ship.getName()) {
+            case "Submarine": return remainingSubmarines > 0;
+            case "Destroyer": return remainingDestroyers > 0;
+            case "Cruiser":   return remainingCruisers > 0;
+            case "Battleship": return remainingBattleships > 0;
+            default: return false;
+        }
+    }
+
+    
     private void handleCellClick(ActionEvent event) {
-        if (selectedShip == null) return;
+        if (selectedShip == null || !hasRemainingShip(selectedShip)) return;
         Button btn = (Button) event.getSource();
         String[] coords = btn.getId().split(",");
         int row = Integer.parseInt(coords[0]);
@@ -85,12 +106,14 @@ public class GameTableController implements Initializable {
         
         if (canPlaceShip(row, col, selectedShip, selectedOrientation)) {
             placeShip(row, col, selectedShip, selectedOrientation);
+            updateShipCount(selectedShip);
             return;
         }
         
         String oppositeOrientation = (selectedOrientation.equals("HORIZONTAL")) ? "REVERSE_HORIZONTAL" : "REVERSE_VERTICAL";
         if (canPlaceShip(row, col, selectedShip, oppositeOrientation)) {
             placeShip(row, col, selectedShip, oppositeOrientation);
+            updateShipCount(selectedShip);            
         }
     }
 
@@ -156,6 +179,31 @@ public class GameTableController implements Initializable {
             }
         }
     }
+    
+    private void updateShipCount(Ship ship) {
+        switch(ship.getName()) {
+            case "Submarine":
+                remainingSubmarines--;
+                subCount.setText("Submarinos: " + remainingSubmarines);
+                if(remainingSubmarines <= 0) rbSubmarine.setDisable(true);
+                break;
+            case "Destroyer":
+                remainingDestroyers--;
+                destCount.setText("Destructores: " + remainingDestroyers);
+                if(remainingDestroyers <= 0) rbDestroyer.setDisable(true);
+                break;
+            case "Cruiser":
+                remainingCruisers--;
+                cruisCount.setText("Cruceros: " + remainingCruisers);
+                if(remainingCruisers <= 0) rbCruiser.setDisable(true);
+                break;
+            case "Battleship":
+                remainingBattleships--;
+                b_shipCount.setText("Acorazados: " + remainingBattleships);
+                if(remainingBattleships <= 0) rbBattleship.setDisable(true);
+                break;
+        }
+    }
 
     private String getShipColor(Ship ship) {
         switch (ship.getSize()) {
@@ -206,14 +254,14 @@ public class GameTableController implements Initializable {
                 button.setId(row + "," + col);
 
                 switch (size) {
-                    case 8:
-                        button.setPrefSize(60, 60);
-                        break;
                     case 12:
-                        button.setPrefSize(50, 50);
+                        button.setPrefSize(51, 51);
                         break;
                     case 16:
-                        button.setPrefSize(40, 40);
+                        button.setPrefSize(41, 41);
+                        break;
+                    case 20:
+                        button.setPrefSize(31, 31);
                         break;
                     default:
                         break;

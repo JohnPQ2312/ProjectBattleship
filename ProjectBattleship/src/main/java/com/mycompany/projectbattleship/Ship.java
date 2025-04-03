@@ -16,6 +16,7 @@ public class Ship {
         this.h_pos = true;
     }
 
+    public String getName() { return name;}
     public int getSize() { return size; }
     public boolean isHorizontal() { return h_pos; }
     public void rotar() { h_pos = !h_pos; }

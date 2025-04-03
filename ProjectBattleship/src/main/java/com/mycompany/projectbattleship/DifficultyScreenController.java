@@ -71,13 +71,13 @@ public class DifficultyScreenController implements Initializable {
     private int getBoardSize(String difficulty) {
         switch (difficulty) {
             case "FACIL":
-                return 8;
-            case "MEDIO":
                 return 12;
-            case "DIFICIL":
+            case "MEDIO":
                 return 16;
+            case "DIFICIL":
+                return 20;
             default:
-                return 8;
+                return 12;
         }
     }
     

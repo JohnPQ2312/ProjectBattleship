@@ -10,9 +10,9 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane id="AnchorPane" fx:id="rootPane" prefHeight="850.0" prefWidth="1000.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.projectbattleship.GameTableController">
+<AnchorPane id="AnchorPane" fx:id="rootPane" prefHeight="850.0" prefWidth="1000.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.projectbattleship.Player1BoardController">
     <stylesheets>
-        <URL value="@/styles/gametable.css" />
+        <URL value="@/styles/player1board.css" />
     </stylesheets>
    <children>
       <GridPane fx:id="gridPane" layoutX="310.0" layoutY="325.0">
@@ -41,5 +41,8 @@
       <TextField fx:id="playerNameField" layoutX="9.0" layoutY="61.0" />
       <TextField fx:id="difficultyField" layoutX="9.0" layoutY="138.0" />
       <Label layoutX="57.0" layoutY="113.0" text="Dificultad" />
+      <Button fx:id="btnChangeView" layoutX="883.0" layoutY="24.0" mnemonicParsing="false" text="Cambiar vista" />
+      <Button fx:id="btnChangePlayer" layoutX="874.0" layoutY="787.0" mnemonicParsing="false" text="Cambiar jugador" />
+      <Button fx:id="btnPrintTableTest" layoutX="773.0" layoutY="24.0" mnemonicParsing="false" onAction="#printTableTest" text="Button" />
    </children>
 </AnchorPane>

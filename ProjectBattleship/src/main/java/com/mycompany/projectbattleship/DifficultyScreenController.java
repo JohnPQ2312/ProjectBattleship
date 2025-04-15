@@ -14,6 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
@@ -29,8 +30,8 @@ public class DifficultyScreenController implements Initializable {
     private RadioButton rbEasy, rbMedium, rbHard;
     
     @FXML
-    private TextField enterName;
-    String name;
+    private TextField enterName, enterName2;
+    String name, name2;
     String difficult;
     
     boolean rbConfirmed, nameConfirmed;
@@ -44,6 +45,9 @@ public class DifficultyScreenController implements Initializable {
     private Button backDifficulty, saveName;
     
     @FXML
+    private ChoiceBox<String> modeChoiceBox;
+    
+    @FXML
     private void backToMain() throws IOException{
         App.setRoot("menuScreen");
     }
@@ -51,6 +55,7 @@ public class DifficultyScreenController implements Initializable {
     @FXML
     private void confirmSelection() throws IOException {
         name = enterName.getText();
+        name2 = enterName2.getText();
         
         if (rbEasy.isSelected()) {
             difficult = "FACIL";
@@ -60,12 +65,17 @@ public class DifficultyScreenController implements Initializable {
             difficult = "DIFICIL";
         }
 
-        GameState.setPlayerName(name);
+        GameState.setPlayer1Name(name);
+        GameState.setPlayer2Name(name2);
         GameState.setDifficulty(difficult);
         
         int boardSize = getBoardSize(difficult);
         GameTableController.setBoardSize(boardSize);
-        App.setRoot("gameTable");
+        GameState.initBoards(boardSize);
+        
+        String mode = modeChoiceBox.getValue();
+        GameState.setGameMode(mode);
+        App.setRoot("Player1Board");
     }
 
     private int getBoardSize(String difficulty) {
@@ -103,10 +113,18 @@ public class DifficultyScreenController implements Initializable {
         ChangeListener<Object> updateListener = (observable, oldValue, newValue) -> {
             updateButtonState(enterName.getText(), rbGroup, confirmButton);
         };
-
+        
         enterName.textProperty().addListener(updateListener);
         rbGroup.selectedToggleProperty().addListener(updateListener);
-
+        
+        modeChoiceBox.getItems().addAll("Jugador vs Jugador", "Jugador vs CPU");
+        modeChoiceBox.setValue("Jugador vs Jugador");
+        
+        modeChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            boolean isPVP = newVal.equals("Jugador vs Jugador");
+            enterName2.setDisable(!isPVP);
+            enterName2.setVisible(isPVP);
+        });
     }
 
 }

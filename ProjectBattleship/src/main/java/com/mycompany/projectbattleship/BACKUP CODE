@@ -1,0 +1,495 @@
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
+ */
+package com.mycompany.projectbattleship;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+
+public class GameTableController implements Initializable {
+
+    @FXML
+    private RadioButton rbSubmarine, rbDestroyer, rbCruiser, rbBattleship;
+    private ToggleGroup shipGroup;
+    private Ship selectedShip;
+    private String selectedOrientation = "HORIZONTAL";
+
+    @FXML
+    private AnchorPane rootPane;
+    @FXML
+    private GridPane gridPane;
+    @FXML
+    private Button btnRotate, btnChangePlayer, btnChangeScreen;
+    @FXML
+    private Label orientation, subCount, destCount, cruisCount, b_shipCount;
+    @FXML
+    private TextField playerNameField, difficultyField;
+    
+    private static int boardSize = 8;
+    
+    private int remainingSubmarines = 4;
+    private int remainingDestroyers = 3;
+    private int remainingCruisers = 2;
+    private int remainingBattleships = 1;
+
+    public static void setBoardSize(int size) {
+        boardSize = size;
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        subCount.setText("Submarinos: " + remainingSubmarines);
+        destCount.setText("Destructores: " + remainingDestroyers);
+        cruisCount.setText("Cruceros: " + remainingCruisers);
+        b_shipCount.setText("Acorazados: " + remainingBattleships);
+        
+        int currentPlayer = GameState.getCurrentPlayer();
+        String playerName = (currentPlayer == 1) ? GameState.getPlayer1Name() : GameState.getPlayer2Name();
+        playerNameField.setText(playerName);
+        playerNameField.setEditable(false);        
+        
+        String difficulty = GameState.getDifficulty();
+        difficultyField.setText(difficulty);
+        difficultyField.setEditable(false);  
+        
+        shipGroup = new ToggleGroup();
+        rbSubmarine.setToggleGroup(shipGroup);
+        rbDestroyer.setToggleGroup(shipGroup);
+        rbCruiser.setToggleGroup(shipGroup);
+        rbBattleship.setToggleGroup(shipGroup);
+
+        shipGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == rbSubmarine) selectedShip = new Ship("Submarine", 1);
+            else if (newValue == rbDestroyer) selectedShip = new Ship("Destroyer", 2);
+            else if (newValue == rbCruiser) selectedShip = new Ship("Cruiser", 3);
+            else if (newValue == rbBattleship) selectedShip = new Ship("Battleship", 4);
+        });
+
+        createBoard(boardSize);
+        Platform.runLater(() -> centerBoard());
+    }
+
+    private boolean hasRemainingShip(Ship ship) {
+        switch(ship.getName()) {
+            case "Submarine": return remainingSubmarines > 0;
+            case "Destroyer": return remainingDestroyers > 0;
+            case "Cruiser":   return remainingCruisers > 0;
+            case "Battleship": return remainingBattleships > 0;
+            default: return false;
+        }
+    }
+
+    
+    private void handleCellClick(ActionEvent event) {
+        if (selectedShip == null || !hasRemainingShip(selectedShip)) return;
+        Button btn = (Button) event.getSource();
+        String[] coords = btn.getId().split(",");
+        int row = Integer.parseInt(coords[0]);
+        int col = Integer.parseInt(coords[1]);
+        
+        if (canPlaceShip(row, col, selectedShip, selectedOrientation)) {
+            placeShip(row, col, selectedShip, selectedOrientation);
+            updateShipCount(selectedShip);
+            return;
+        }
+        
+        String oppositeOrientation = (selectedOrientation.equals("HORIZONTAL")) ? "REVERSE_HORIZONTAL" : "REVERSE_VERTICAL";
+        if (canPlaceShip(row, col, selectedShip, oppositeOrientation)) {
+            placeShip(row, col, selectedShip, oppositeOrientation);
+            updateShipCount(selectedShip);            
+        }
+    }
+
+    private boolean canPlaceShip(int row, int col, Ship ship, String orientation) {
+        int size = ship.getSize();
+        switch (orientation) {
+            case "HORIZONTAL":
+                if (col + size > boardSize) return false;
+                for (int i = 0; i < size; i++) {
+                    if (!isCellAvailable(row, col + i)) return false;
+                }   break;
+            case "REVERSE_HORIZONTAL":
+                if (col - size + 1 < 0) return false;
+                for (int i = 0; i < size; i++) {
+                    if (!isCellAvailable(row, col - i)) return false;
+                }   break;
+            case "VERTICAL":
+                if (row + size > boardSize) return false;
+                for (int i = 0; i < size; i++) {
+                    if (!isCellAvailable(row + i, col)) return false;
+                }   break;
+            case "REVERSE_VERTICAL":
+                if (row - size + 1 < 0) return false;
+                for (int i = 0; i < size; i++) {
+                    if (!isCellAvailable(row - i, col)) return false;
+                }   break;
+            default:
+                break;
+        }
+        return true;
+    }
+
+    private void placeShip(int row, int col, Ship ship, String orientation) {
+        int size = ship.getSize();
+        String shipValue = String.valueOf(size);
+        String shipColor = getShipColor(ship);
+
+        for (int i = 0; i < size; i++) {
+            int newRow = row;
+            int newCol = col;
+
+            switch (orientation) {
+                case "HORIZONTAL":
+                    newCol = col + i;
+                    break;
+                case "REVERSE_HORIZONTAL":
+                    newCol = col - i;
+                    break;
+                case "VERTICAL":
+                    newRow = row + i;
+                    break;
+                case "REVERSE_VERTICAL":
+                    newRow = row - i;
+                    break;
+                default:
+                    break;
+            }
+
+            Button cell = getCellButton(newRow, newCol);
+            if (cell != null) {
+                cell.setText(shipValue);
+                cell.setStyle("-fx-background-color: " + shipColor + "; -fx-text-fill: transparent;");
+            }
+        }
+    }
+    
+    private void updateShipCount(Ship ship) {
+        switch(ship.getName()) {
+            case "Submarine":
+                remainingSubmarines--;
+                subCount.setText("Submarinos: " + remainingSubmarines);
+                if(remainingSubmarines <= 0) rbSubmarine.setDisable(true);
+                break;
+            case "Destroyer":
+                remainingDestroyers--;
+                destCount.setText("Destructores: " + remainingDestroyers);
+                if(remainingDestroyers <= 0) rbDestroyer.setDisable(true);
+                break;
+            case "Cruiser":
+                remainingCruisers--;
+                cruisCount.setText("Cruceros: " + remainingCruisers);
+                if(remainingCruisers <= 0) rbCruiser.setDisable(true);
+                break;
+            case "Battleship":
+                remainingBattleships--;
+                b_shipCount.setText("Acorazados: " + remainingBattleships);
+                if(remainingBattleships <= 0) rbBattleship.setDisable(true);
+                break;
+        }
+    }
+
+    private String getShipColor(Ship ship) {
+        switch (ship.getSize()) {
+            case 1: return "#ff6666"; // Rojo para submarino
+            case 2: return "#66b3ff"; // Azul para destructor
+            case 3: return "#99ff99"; // Verde para crucero
+            case 4: return "#ffcc66"; // Amarillo para acorazado
+            default: return "#ffffff"; // Blanco por defecto
+        }
+    }
+
+    private boolean isCellAvailable(int row, int col) {
+        Button cell = getCellButton(row, col);
+        return cell != null && cell.getText().isEmpty();
+    }
+
+    private Button getCellButton(int row, int col) {
+        for (Node node : gridPane.getChildren()) {
+            if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
+                GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {
+                return (Button) node;
+            }
+        }
+        return null;
+    }
+    
+    private void createBoard(int size) {
+        gridPane.getChildren().clear();
+        gridPane.setGridLinesVisible(true);
+        gridPane.getColumnConstraints().clear();
+        gridPane.getRowConstraints().clear();
+
+        for (int i = 0; i < size; i++) {
+            ColumnConstraints colConstraints = new ColumnConstraints();
+            colConstraints.setPercentWidth(100.0 / size);
+            colConstraints.setHgrow(Priority.ALWAYS);
+            gridPane.getColumnConstraints().add(colConstraints);
+
+            RowConstraints rowConstraints = new RowConstraints();
+            rowConstraints.setPercentHeight(100.0 / size);
+            rowConstraints.setVgrow(Priority.ALWAYS);
+            gridPane.getRowConstraints().add(rowConstraints);
+        }
+
+        boolean isAttackPhase = GameState.getCurrentPhase() == GameState.Phase.ATTACK_P1 ||
+                                GameState.getCurrentPhase() == GameState.Phase.ATTACK_P2;
+        rbSubmarine.setDisable(isAttackPhase);
+        rbDestroyer.setDisable(isAttackPhase);
+        rbCruiser.setDisable(isAttackPhase);
+        rbBattleship.setDisable(isAttackPhase);
+
+        btnRotate.setDisable(isAttackPhase);
+        orientation.setVisible(!isAttackPhase);
+
+        subCount.setVisible(!isAttackPhase);
+        destCount.setVisible(!isAttackPhase);
+        cruisCount.setVisible(!isAttackPhase);
+        b_shipCount.setVisible(!isAttackPhase);
+        
+        int player = GameState.getCurrentPlayer();
+        int enemy = (player == 1) ? 2 : 1;
+
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                Button button = new Button();
+                button.setId(row + "," + col);
+
+                switch (size) {
+                    case 12:
+                        button.setPrefSize(51, 51);
+                        break;
+                    case 16:
+                        button.setPrefSize(41, 41);
+                        break;
+                    case 20:
+                        button.setPrefSize(31, 31);
+                        break;
+                    default:
+                        break;
+                }
+
+                GridPane.setHalignment(button, HPos.CENTER);
+                GridPane.setValignment(button, VPos.CENTER);
+
+                if (isAttackPhase) {
+                    int value = GameState.getBoardCell(enemy, row, col);
+                    switch (value) {
+                        case -2:
+                            button.setStyle("-fx-background-color: red;");
+                            button.setDisable(true);
+                            break;
+                        case -1:
+                            button.setStyle("-fx-background-color: lightblue;");
+                            button.setDisable(true);
+                            break;
+                        default:
+                            button.setStyle("-fx-background-color: #cccccc;"); // gris neutro
+                            int finalRow = row;
+                            int finalCol = col;
+                            button.setOnAction(event -> handleAttackClick(button, finalRow, finalCol));
+                            break;
+                    }
+                }
+                else {
+                    button.setOnAction(event -> handleCellClick(event));
+                }
+
+                gridPane.add(button, col, row);
+            }
+        }
+    }
+
+    private void handleAttackClick(Button btn, int row, int col) {
+        int currentPlayer = GameState.getCurrentPlayer();
+        int result = GameState.attack(currentPlayer, row, col);
+
+        switch (result) {
+            case -2:
+                btn.setStyle("-fx-background-color: red;"); // tocado
+                break;
+            case -1:
+                btn.setStyle("-fx-background-color: lightblue;"); // agua
+                break;
+            default:
+                return; // ya disparado
+        }
+
+        btn.setDisable(true);
+    }
+    
+    @FXML
+    private void handleChangePlayer() {
+        if (GameState.getGameMode().equals("Jugador vs Jugador")){
+            int nextPlayer = (GameState.getCurrentPlayer() == 1) ? 2 : 1;
+            GameState.setCurrentPlayer(nextPlayer);
+
+            GameState.Phase currentPhase = GameState.getCurrentPhase();
+
+            if (currentPhase == GameState.Phase.PLACE_P1) {
+                GameState.setCurrentPhase(GameState.Phase.PLACE_P2);
+            } else if (currentPhase == GameState.Phase.PLACE_P2) {
+                GameState.setCurrentPhase(GameState.Phase.ATTACK_P1);
+            } else if (currentPhase == GameState.Phase.ATTACK_P1) {
+                GameState.setCurrentPhase(GameState.Phase.ATTACK_P2);
+            } else if (currentPhase == GameState.Phase.ATTACK_P2) {
+                GameState.setCurrentPhase(GameState.Phase.ATTACK_P1);
+            }
+
+            updateViewAccordingToPhase();
+
+            int p = GameState.getCurrentPlayer();
+            String name = (p == 1) ? GameState.getPlayer1Name() : GameState.getPlayer2Name();
+            playerNameField.setText(name);
+        }
+        else {
+        
+        }
+    }
+    
+    @FXML
+    private void handleChangeScreen() {
+        updateViewAccordingToPhase();
+    }
+    
+    private void centerBoard() {
+        double paneWidth = rootPane.getWidth();
+        double paneHeight = rootPane.getHeight();
+        double gridWidth = gridPane.getBoundsInParent().getWidth();
+        double gridHeight = gridPane.getBoundsInParent().getHeight();
+        gridPane.setLayoutX((paneWidth - gridWidth) / 2);
+        gridPane.setLayoutY((paneHeight - gridHeight) / 2);
+    }
+    
+    @FXML
+    private void rotateShip() {
+        if (selectedShip != null) {
+            selectedShip.rotar();
+            selectedOrientation = selectedShip.isHorizontal() ? "HORIZONTAL" : "VERTICAL";
+            orientation.setText("Orientacion: " + selectedOrientation);
+        }
+    }
+    
+    private void updateViewAccordingToPhase() {
+        try {
+            GameState.Phase phase = GameState.getCurrentPhase();
+            if (phase == GameState.Phase.PLACE_P1) {
+                App.setRoot("Player1Board");
+            } else if (phase == GameState.Phase.PLACE_P2) {
+                App.setRoot("Player2Board");
+            } else if (phase == GameState.Phase.ATTACK_P1) {
+                App.setRoot("Player1Attack");
+            } else if (phase == GameState.Phase.ATTACK_P2) {
+                App.setRoot("Player2Attack");
+            } else {
+                App.setRoot("menuScreen");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+    /*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.projectbattleship;
+
+/**
+ *
+ * @author jp570
+ */
+public class GameState {
+    public enum Phase {
+        PLACE_P1, PLACE_P2, ATTACK_P1, ATTACK_P2, GAME_OVER
+    }
+    
+    private static String player1Name;
+    private static String player2Name;
+    private static String difficulty;
+    private static int currentPlayer = 1;
+    private static Phase currentPhase = Phase.PLACE_P1;
+    private static String gameMode;
+    
+    private static int[][] player1Board;
+    private static int[][] player2Board;    
+    
+    public static void initBoards(int size) {
+        player1Board = new int[size][size];
+        player2Board = new int[size][size];
+    }    
+    
+    public static void placeShip(int row, int col, int size, String orientation, int player) {
+        int[][] board = (player == 1) ? player1Board : player2Board;
+        for (int i = 0; i < size; i++) {
+            int r = row, c = col;
+            if ("HORIZONTAL".equals(orientation)) c += i;
+            else if ("VERTICAL".equals(orientation)) r += i;
+            else if ("REVERSE_HORIZONTAL".equals(orientation)) c -= i;
+            else if ("REVERSE_VERTICAL".equals(orientation)) r -= i;
+            board[r][c] = size;
+        }
+    }    
+    
+    public static int attack(int attacker, int row, int col) {
+        int[][] enemyBoard = (attacker == 1) ? player2Board : player1Board;
+        int value = enemyBoard[row][col];
+
+        if (value > 0) {
+            enemyBoard[row][col] = -2; 
+            return -2; 
+        } else if (value == 0) {
+            enemyBoard[row][col] = -1;
+            return -1;
+        }
+        return 0;
+    }    
+    
+    public static int getBoardCell(int player, int row, int col) {
+        int[][] board = (player == 1) ? player1Board : player2Board;
+        return board[row][col];
+    }
+
+    public static void setBoardCell(int player, int row, int col, int value) {
+        int[][] board = (player == 1) ? player1Board : player2Board;
+        board[row][col] = value;
+    }    
+    
+    public static String getPlayer1Name() { return player1Name; }
+    public static void setPlayer1Name(String name) { player1Name = name; }
+
+    public static String getPlayer2Name() { return player2Name; }
+    public static void setPlayer2Name(String name) { player2Name = name; }
+
+    public static String getDifficulty() { return difficulty; }
+    public static void setDifficulty(String diff) { difficulty = diff; }
+
+    public static int getCurrentPlayer() { return currentPlayer; }
+    public static void setCurrentPlayer(int player) { currentPlayer = player; }
+
+    public static Phase getCurrentPhase() { return currentPhase; }
+    public static void setCurrentPhase(Phase phase) { currentPhase = phase; }
+    
+    public static void setGameMode(String mode) { gameMode = mode; }
+    public static String getGameMode() { return gameMode; }
+}

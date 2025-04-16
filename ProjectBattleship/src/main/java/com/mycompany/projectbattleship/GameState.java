@@ -25,6 +25,7 @@ public class GameState {
     private static int[][] player2Board;
 
     private static int boardSize = 8;
+    private static int remainingShots = 1;
 
     public static void initBoards(int size) {
         boardSize = size;
@@ -70,6 +71,24 @@ public class GameState {
         return 0; // ya disparado
     }
 
+    public static void useShot(){
+        if (remainingShots > 0) remainingShots--;
+    }
+    
+    public static void resetShotsForTurn(String difficulty){
+        switch (difficulty) {
+            case "FACIL":
+                remainingShots = 3;
+                break;
+            case "MEDIO":
+                remainingShots = 2;
+                break;
+            default:
+                remainingShots = 1;
+                break;
+        }
+    }
+    
     public static int getBoardCell(int player, int row, int col) {
         int[][] board = (player == 1) ? player1Board : player2Board;
         return board[row][col];
@@ -97,4 +116,7 @@ public class GameState {
 
     public static void setGameMode(String mode) { gameMode = mode; }
     public static String getGameMode() { return gameMode; }
+    
+    public static int getRemainingShots() { return remainingShots; }
+    public static void setRemainingShots(int shots) { remainingShots = shots; }
 }

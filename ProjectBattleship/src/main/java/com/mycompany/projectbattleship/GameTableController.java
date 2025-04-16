@@ -29,6 +29,8 @@ public abstract class GameTableController implements Initializable{
     protected static int boardSize = 8;
     protected abstract void handleCellClick(ActionEvent event);
     
+    
+    
     public static void setBoardSize(int size) {
         boardSize = size;
     }

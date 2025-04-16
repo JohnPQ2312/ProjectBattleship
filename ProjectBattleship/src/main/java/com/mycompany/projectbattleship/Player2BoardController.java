@@ -4,15 +4,22 @@
  */
 package com.mycompany.projectbattleship;
 
+import static com.mycompany.projectbattleship.GameTableController.boardSize;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 
 /**
  * FXML Controller class
@@ -51,18 +58,74 @@ public class Player2BoardController extends GameTableController {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         GameState.setCurrentPlayer(currentPlayer);
+        GameState.Phase phase = GameState.getCurrentPhase();
 
         playerNameField.setText(GameState.getPlayer2Name());
         playerNameField.setEditable(false);
         difficultyField.setText(GameState.getDifficulty());
         difficultyField.setEditable(false);
 
+        boolean isPlacement = (phase == GameState.Phase.PLACE_P2);
         setupShipButtons();
-        updateShipLabels();
+        btnRotate.setDisable(!isPlacement);
+        rbSubmarine.setDisable(!isPlacement);
+        rbDestroyer.setDisable(!isPlacement);
+        rbCruiser.setDisable(!isPlacement);
+        rbBattleship.setDisable(!isPlacement);
+        subCount.setVisible(isPlacement);
+        destCount.setVisible(isPlacement);
+        cruisCount.setVisible(isPlacement);
+        b_shipCount.setVisible(isPlacement);
+        orientation.setVisible(isPlacement);  
         
-        createBoard(boardSize);
+        btnChangeView.setDisable(isPlacement);        
+        
+        if (isPlacement) {
+            updateShipLabels();
+            createBoard(boardSize);
+        } else {
+            createObservationBoard(boardSize, GameState.getCurrentPlayer());
+        }    
+        
         Platform.runLater(this::centerBoard);
         
+    }
+
+    private void createObservationBoard(int size, int player) {
+        gridPane.getChildren().clear();
+        gridPane.getColumnConstraints().clear();
+        gridPane.getRowConstraints().clear();
+        gridPane.setGridLinesVisible(true);
+
+        for (int i = 0; i < size; i++) {
+            ColumnConstraints cc = new ColumnConstraints();
+            cc.setPercentWidth(100.0/size);
+            gridPane.getColumnConstraints().add(cc);
+            RowConstraints rc = new RowConstraints();
+            rc.setPercentHeight(100.0/size);
+            gridPane.getRowConstraints().add(rc);
+        }
+
+        for (int r = 0; r < size; r++) {
+            for (int c = 0; c < size; c++) {
+                Button cell = new Button();
+                cell.setId(r + "," + c);
+                cell.setPrefSize(getCellSize(size), getCellSize(size));
+
+                int val = GameState.getBoardCell(player, r, c);
+                if (val > 0) {
+                    Ship dummyShip = new Ship("Temp", val);
+                    cell.setText(String.valueOf(val));
+                    cell.setStyle("-fx-background-color: " + getShipColor(dummyShip) + ";");
+                } else {
+                    cell.setStyle("-fx-background-color: lightblue;");
+                }
+                cell.setDisable(true);
+                GridPane.setHalignment(cell, HPos.CENTER);
+                GridPane.setValignment(cell, VPos.CENTER);
+                gridPane.add(cell, c, r);
+            }
+        }
     }    
     
     private void setupShipButtons() {
@@ -214,4 +277,22 @@ public class Player2BoardController extends GameTableController {
             default: return "#ffffff"; // Blanco por defecto
         }
     }    
+    
+    @FXML
+    private void handleChangeScreen() throws IOException {
+        App.setRoot("Player2Attack");
+    }
+    
+    @FXML
+    private void handleChangePlayer() throws IOException {
+        GameState.setCurrentPlayer(1);
+
+        if (GameState.getCurrentPhase() == GameState.Phase.PLACE_P2) {
+            GameState.setCurrentPhase(GameState.Phase.ATTACK_P1);
+            App.setRoot("Player1Attack");
+        } else if (GameState.getCurrentPhase() == GameState.Phase.ATTACK_P2) {
+            GameState.setCurrentPhase(GameState.Phase.ATTACK_P1);
+            App.setRoot("Player1Board");
+        }
+    }
 }

@@ -87,7 +87,11 @@ public class Player1BoardController extends GameTableController {
             createObservationBoard(boardSize, GameState.getCurrentPlayer());
         }    
         
-        Platform.runLater(this::centerBoard);
+        Platform.runLater(() -> {
+            rootPane.widthProperty().addListener((obs, oldVal, newVal) -> centerBoard());
+            rootPane.heightProperty().addListener((obs, oldVal, newVal) -> centerBoard());
+            centerBoard();
+        });
         
     }
 

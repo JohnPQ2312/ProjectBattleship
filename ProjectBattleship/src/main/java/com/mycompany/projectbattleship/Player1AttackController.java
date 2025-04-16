@@ -18,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 
 /**
@@ -46,10 +47,14 @@ public class Player1AttackController extends GameTableController {
         difficultyField.setEditable(false);
         attackingLabel.setText("Atacando a: " + GameState.getPlayer2Name());
         
-        btnChangePlayer.setDisable(true);
+        btnChangePlayer.setDisable(GameState.getRemainingShots() > 0);
         
         createAttackBoard(boardSize);
-        Platform.runLater(this::centerBoard);
+        Platform.runLater(() -> {
+            rootPane.widthProperty().addListener((obs, oldVal, newVal) -> centerBoard());
+            rootPane.heightProperty().addListener((obs, oldVal, newVal) -> centerBoard());
+            centerBoard();
+        });
     }
 
     private void createAttackBoard(int size) {
@@ -62,10 +67,12 @@ public class Player1AttackController extends GameTableController {
         for (int i = 0; i < size; i++) {
             ColumnConstraints col = new ColumnConstraints();
             col.setPercentWidth(100.0 / size);
+            col.setHgrow(Priority.ALWAYS);
             gridPane.getColumnConstraints().add(col);
 
             RowConstraints row = new RowConstraints();
             row.setPercentHeight(100.0 / size);
+            row.setVgrow(Priority.ALWAYS);
             gridPane.getRowConstraints().add(row);
         }
 
@@ -74,11 +81,7 @@ public class Player1AttackController extends GameTableController {
                 Button cell = new Button();
                 cell.setId(row + "," + col);
 
-                switch (size) {
-                    case 12: cell.setPrefSize(51, 51);
-                    case 16: cell.setPrefSize(41, 41);
-                    case 20: cell.setPrefSize(31, 31);
-                }
+                cell.setPrefSize(getCellSize(size), getCellSize(size));   
 
                 int value = GameState.getBoardCell(enemyPlayer, row, col);
                 switch (value) {
@@ -133,6 +136,7 @@ public class Player1AttackController extends GameTableController {
     private void handleChangePlayer() throws IOException {
         GameState.setCurrentPlayer(enemyPlayer);
         GameState.setCurrentPhase(GameState.Phase.ATTACK_P2);
+        GameState.resetShotFlag();
         GameState.resetShotsForTurn(GameState.getDifficulty());
         App.setRoot("player2Attack");
     }

@@ -26,6 +26,8 @@ public class GameState {
 
     private static int boardSize = 8;
     private static int remainingShots = 1;
+    
+    private static boolean shotsAssignedThisTurn = false;
 
     public static void initBoards(int size) {
         boardSize = size;
@@ -76,6 +78,8 @@ public class GameState {
     }
     
     public static void resetShotsForTurn(String difficulty){
+        if (shotsAssignedThisTurn) return;
+        
         switch (difficulty) {
             case "FACIL":
                 remainingShots = 3;
@@ -87,6 +91,12 @@ public class GameState {
                 remainingShots = 1;
                 break;
         }
+        
+        shotsAssignedThisTurn = true;
+    }
+    
+    public static void resetShotFlag() {
+        shotsAssignedThisTurn = false;
     }
     
     public static int getBoardCell(int player, int row, int col) {

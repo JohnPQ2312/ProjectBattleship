@@ -120,7 +120,11 @@ public class Player2BoardController extends GameTableController {
                 if (val > 0) {
                     Ship dummyShip = new Ship("Temp", val);
                     cell.setText(String.valueOf(val));
-                    cell.setStyle("-fx-background-color: " + getShipColor(dummyShip) + ";");
+                    cell.setStyle("-fx-background-color: " + getShipColor(dummyShip) + ";" + " -fx-text-fill: transparent;");
+                } else if (val == -1) {
+                    cell.setStyle("-fx-background-color: #1100ff;");
+                } else if (val == -2){
+                    cell.setStyle("-fx-background-color: #1c1c1c;");
                 } else {
                     cell.setStyle("-fx-background-color: lightblue;");
                 }

@@ -112,7 +112,7 @@ public class Player2AttackController extends GameTableController {
         switch (result) {
             case -2: btn.setStyle("-fx-background-color: red;"); break;
             case -1: btn.setStyle("-fx-background-color: lightblue;"); break;
-            case 0: return; // Ya atacado
+            case 0: return;
         }
 
         btn.setDisable(true);

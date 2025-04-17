@@ -13,6 +13,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -72,6 +73,7 @@ public class Player1BoardController extends GameTableController {
         rbDestroyer.setDisable(!isPlacement);
         rbCruiser.setDisable(!isPlacement);
         rbBattleship.setDisable(!isPlacement);
+        
         subCount.setVisible(isPlacement);
         destCount.setVisible(isPlacement);
         cruisCount.setVisible(isPlacement);
@@ -79,12 +81,25 @@ public class Player1BoardController extends GameTableController {
         orientation.setVisible(isPlacement);  
         
         btnChangeView.setDisable(isPlacement);        
+              
         
         if (isPlacement) {
             updateShipLabels();
             createBoard(boardSize);
+            
+            if (GameState.isPvC()) {
+               btnChangePlayer.setDisable(true);
+            } else {
+               btnChangePlayer.setDisable(false);
+            }  
         } else {
             createObservationBoard(boardSize, GameState.getCurrentPlayer());
+            
+            if (GameState.isPvC()) {
+               btnChangePlayer.setDisable(true);
+            } else {
+               btnChangePlayer.setDisable(false);
+            }  
         }    
         
         Platform.runLater(() -> {
@@ -120,7 +135,7 @@ public class Player1BoardController extends GameTableController {
                 if (val > 0) {
                     Ship dummyShip = new Ship("Temp", val);
                     cell.setText(String.valueOf(val));
-                    cell.setStyle("-fx-background-color: " + getShipColor(dummyShip) + ";");
+                    cell.setStyle("-fx-background-color: " + getShipColor(dummyShip) + ";" + " -fx-text-fill: transparent;");
                 } else {
                     cell.setStyle("-fx-background-color: lightblue;");
                 }
@@ -177,6 +192,7 @@ public class Player1BoardController extends GameTableController {
             placeShip(row, col, selectedShip, selectedOrientation);
             GameState.placeShip(row, col, selectedShip.getSize(), selectedOrientation, currentPlayer);
             updateShipCount(selectedShip);
+            checkIfPlacementFinished(); 
             return;
         }
         
@@ -184,9 +200,35 @@ public class Player1BoardController extends GameTableController {
         if (canPlaceShip(row, col, selectedShip, oppositeOrientation)) {
             placeShip(row, col, selectedShip, oppositeOrientation);
             GameState.placeShip(row, col, selectedShip.getSize(), oppositeOrientation, currentPlayer);
-            updateShipCount(selectedShip);            
+            updateShipCount(selectedShip);
+            checkIfPlacementFinished();            
         }
     }
+    
+    private void checkIfPlacementFinished() {
+       if (remainingSubmarines == 0 && remainingDestroyers == 0 &&
+           remainingCruisers == 0 && remainingBattleships == 0) {
+
+           if (GameState.isPvC()) {
+               GameState.getCpuPlayer().placeAllShips();
+               GameState.setCurrentPhase(GameState.Phase.ATTACK_P1);
+               
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Preparación del CPU");
+                alert.setHeaderText(null);
+                alert.setContentText("El CPU ha colocado sus barcos. Comienza tu turno.");
+                alert.showAndWait();
+               
+               try {
+                   App.setRoot("player1Attack");
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+           } else {
+               btnChangePlayer.setDisable(false);
+           }
+       }
+   }   
     
     private boolean hasRemainingShip(Ship ship) {
         switch(ship.getName()) {

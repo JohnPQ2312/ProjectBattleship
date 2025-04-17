@@ -14,6 +14,7 @@ public class GameState {
         PLACE_P1, PLACE_P2, ATTACK_P1, ATTACK_P2, GAME_OVER
     }
 
+    private static CPUPlayer cpuPlayer;
     private static String player1Name;
     private static String player2Name;
     private static String difficulty;
@@ -64,13 +65,13 @@ public class GameState {
         int[][] enemyBoard = (attacker == 1) ? player2Board : player1Board;
         int value = enemyBoard[row][col];
         if (value > 0) {
-            enemyBoard[row][col] = -2; // impacto
+            enemyBoard[row][col] = -2;
             return -2;
         } else if (value == 0) {
-            enemyBoard[row][col] = -1; // agua
+            enemyBoard[row][col] = -1;
             return -1;
         }
-        return 0; // ya disparado
+        return 0;
     }
 
     public static void useShot(){
@@ -95,6 +96,10 @@ public class GameState {
         shotsAssignedThisTurn = true;
     }
     
+    public static boolean isPvC() {
+        return "Jugador vs CPU".equalsIgnoreCase(gameMode);
+    }
+    
     public static void resetShotFlag() {
         shotsAssignedThisTurn = false;
     }
@@ -109,6 +114,14 @@ public class GameState {
         board[row][col] = value;
     }
 
+    public static void setCpuPlayer(CPUPlayer cpu){
+        cpuPlayer = cpu;
+    }
+    
+    public static CPUPlayer getCpuPlayer() {
+        return cpuPlayer;
+    }
+    
     public static String getPlayer1Name() { return player1Name; }
     public static void setPlayer1Name(String name) { player1Name = name; }
 

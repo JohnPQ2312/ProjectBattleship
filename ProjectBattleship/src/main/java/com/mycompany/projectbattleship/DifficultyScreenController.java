@@ -75,6 +75,12 @@ public class DifficultyScreenController implements Initializable {
         
         String mode = modeChoiceBox.getValue();
         GameState.setGameMode(mode);
+        
+        if (GameState.isPvC()) {
+            CPUPlayer cpu = new CPUPlayer(difficult, boardSize);
+            GameState.setCpuPlayer(cpu);
+        }
+        
         App.setRoot("Player1Board");
     }
 

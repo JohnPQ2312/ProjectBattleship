@@ -47,7 +47,8 @@ public class Player1AttackController extends GameTableController {
         difficultyField.setEditable(false);
         attackingLabel.setText("Atacando a: " + GameState.getPlayer2Name());
         
-        btnChangePlayer.setDisable(GameState.getRemainingShots() > 0);
+        btnChangePlayer.setDisable(GameState.getRemainingShots() > 0 || GameState.isPvC());
+        
         
         createAttackBoard(boardSize);
         Platform.runLater(() -> {
@@ -116,21 +117,52 @@ public class Player1AttackController extends GameTableController {
         switch (result) {
             case -2: btn.setStyle("-fx-background-color: red;"); break;
             case -1: btn.setStyle("-fx-background-color: lightblue;"); break;
-            case 0: return; // ya atacado
+            case 0: return;
         }
 
         btn.setDisable(true);
         GameState.useShot();
 
         if (GameState.getRemainingShots() == 0) {
-            btnChangePlayer.setDisable(false);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Turno finalizado");
-            alert.setHeaderText(null);
-            alert.setContentText("Has usado todos tus disparos. Cambia de jugador.");
-            alert.showAndWait();
+            if (GameState.isPvC()) {
+                runCpuTurn();
+            } else {
+                btnChangePlayer.setDisable(false);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Turno finalizado");
+                alert.setHeaderText(null);
+                alert.setContentText("Has usado todos tus disparos. Cambia de jugador.");
+                alert.showAndWait();
+            }
         }
     }
+    
+    private void runCpuTurn() {
+        CPUPlayer cpu = GameState.getCpuPlayer();
+        int shots = GameState.getRemainingShots();
+
+        for (int i = 0; i < shots; i++) {
+            int[] move = cpu.makeMove();
+            GameState.attack(2, move[0], move[1]);
+        }
+
+        GameState.setCurrentPlayer(1);
+        GameState.setCurrentPhase(GameState.Phase.ATTACK_P1);
+        GameState.resetShotFlag();
+        GameState.resetShotsForTurn(GameState.getDifficulty());
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Turno del CPU");
+        alert.setHeaderText(null);
+        alert.setContentText("El CPU ha realizado sus disparos. Tu turno.");
+        alert.showAndWait();
+
+        try {
+            App.setRoot("player1Attack");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }    
 
     @FXML
     private void handleChangePlayer() throws IOException {

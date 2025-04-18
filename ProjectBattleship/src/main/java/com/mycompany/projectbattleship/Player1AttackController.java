@@ -139,7 +139,19 @@ public class Player1AttackController extends GameTableController {
     
     private void runCpuTurn() {
         CPUPlayer cpu = GameState.getCpuPlayer();
-        int shots = GameState.getRemainingShots();
+        int shots;
+        
+        switch (GameState.getDifficulty()) {
+            case "FACIL":
+                shots = 3;
+                break;
+            case "MEDIO":
+                shots = 2;
+                break;
+            default:
+                shots = 1;
+                break;
+        }
 
         for (int i = 0; i < shots; i++) {
             int[] move = cpu.makeMove();

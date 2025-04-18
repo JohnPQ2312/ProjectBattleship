@@ -41,7 +41,7 @@ public class CPUPlayer {
 
     public void placeAllShips() {
         int[] counts = {4, 3, 2, 1};
-        String[] orientations = {"HORIZONTAL", "VERTICAL"};
+        String[] orientations = {"HORIZONTAL", "REVERSE_HORIZONTAL", "VERTICAL", "REVERSE_VERTICAL"};
         for (int size = 1; size <= counts.length; size++) {
             int qty = counts[size - 1];
             for (int i = 0; i < qty; i++) {

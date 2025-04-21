@@ -120,6 +120,28 @@ public class Player1AttackController extends GameTableController {
             case 0: return;
         }
 
+        if (GameState.getCurrentPhase() == GameState.Phase.EXTRA_TURN){
+            try {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Turno finalizado");
+                alert.setHeaderText(null);
+                alert.setContentText(GameState.getPlayer1Name() + ", destruiste todos los barcos, pero al ser tu el del golpe de gracia, al oponente se le otorgará un disparo adicional.");
+                alert.showAndWait();
+                App.setRoot("player2Attack");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        if (GameState.getCurrentPhase() == GameState.Phase.GAME_OVER) {
+            try {
+                handleGameOverScreen();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            return;
+        }
+        
         btn.setDisable(true);
         GameState.useShot();
 
@@ -139,23 +161,19 @@ public class Player1AttackController extends GameTableController {
     
     private void runCpuTurn() {
         CPUPlayer cpu = GameState.getCpuPlayer();
-        int shots;
-        
-        switch (GameState.getDifficulty()) {
-            case "FACIL":
-                shots = 3;
-                break;
-            case "MEDIO":
-                shots = 2;
-                break;
-            default:
-                shots = 1;
-                break;
-        }
+        int shots = GameState.manualGetShots(GameState.getDifficulty());
 
         for (int i = 0; i < shots; i++) {
             int[] move = cpu.makeMove();
             GameState.attack(2, move[0], move[1]);
+            if (GameState.getCurrentPhase() == GameState.Phase.GAME_OVER) {
+                try {
+                    App.setRoot("gameOverScreen");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
         }
 
         GameState.setCurrentPlayer(1);
@@ -188,6 +206,11 @@ public class Player1AttackController extends GameTableController {
     @FXML
     private void handleChangeScreen() throws IOException {
         App.setRoot("player1Board");
+    }
+
+    @FXML
+    private void handleGameOverScreen() throws IOException {
+        App.setRoot("gameOverScreen");
     }    
     
     @Override

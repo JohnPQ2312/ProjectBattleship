@@ -85,7 +85,9 @@ public class Player2BoardController extends GameTableController {
             createBoard(boardSize);
         } else {
             createObservationBoard(boardSize, GameState.getCurrentPlayer());
-        }    
+        }   
+        
+        btnChangePlayer.setDisable(true);
         
         Platform.runLater(() -> {
             rootPane.widthProperty().addListener((obs, oldVal, newVal) -> centerBoard());
@@ -96,6 +98,7 @@ public class Player2BoardController extends GameTableController {
     }
 
     private void createObservationBoard(int size, int player) {
+        btnChangePlayer.setVisible(false);
         gridPane.getChildren().clear();
         gridPane.getColumnConstraints().clear();
         gridPane.getRowConstraints().clear();
@@ -181,6 +184,7 @@ public class Player2BoardController extends GameTableController {
             placeShip(row, col, selectedShip, selectedOrientation);
             GameState.placeShip(row, col, selectedShip.getSize(), selectedOrientation, currentPlayer);
             updateShipCount(selectedShip);
+            checkIfPlacementFinished();            
             return;
         }
         
@@ -188,8 +192,16 @@ public class Player2BoardController extends GameTableController {
         if (canPlaceShip(row, col, selectedShip, oppositeOrientation)) {
             placeShip(row, col, selectedShip, oppositeOrientation);
             GameState.placeShip(row, col, selectedShip.getSize(), oppositeOrientation, currentPlayer);
-            updateShipCount(selectedShip);            
+            updateShipCount(selectedShip);
+            checkIfPlacementFinished();            
         }
+    }
+    
+    private void checkIfPlacementFinished() {
+       if (remainingSubmarines == 0 && remainingDestroyers == 0 &&
+           remainingCruisers == 0 && remainingBattleships == 0) {
+           btnChangePlayer.setDisable(false);
+       }
     }
     
     private boolean hasRemainingShip(Ship ship) {

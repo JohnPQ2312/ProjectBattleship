@@ -96,11 +96,13 @@ public class Player1BoardController extends GameTableController {
             createObservationBoard(boardSize, GameState.getCurrentPlayer());
             
             if (GameState.isPvC()) {
-               btnChangePlayer.setDisable(true);
+               btnChangePlayer.setDisable(true);               
             } else {
                btnChangePlayer.setDisable(false);
             }  
         }    
+        
+        btnChangePlayer.setDisable(true);
         
         Platform.runLater(() -> {
             rootPane.widthProperty().addListener((obs, oldVal, newVal) -> centerBoard());
@@ -111,6 +113,7 @@ public class Player1BoardController extends GameTableController {
     }
 
     private void createObservationBoard(int size, int player) {
+        btnChangePlayer.setVisible(false);
         gridPane.getChildren().clear();
         gridPane.getColumnConstraints().clear();
         gridPane.getRowConstraints().clear();
@@ -228,9 +231,9 @@ public class Player1BoardController extends GameTableController {
                } catch (IOException e) {
                    e.printStackTrace();
                }
-           } else {
+            } else {
                btnChangePlayer.setDisable(false);
-           }
+            }
        }
    }   
     

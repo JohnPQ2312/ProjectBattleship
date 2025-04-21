@@ -37,7 +37,6 @@ public class Player2AttackController extends GameTableController {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         GameState.setCurrentPlayer(currentPlayer);
-        GameState.setCurrentPhase(GameState.Phase.ATTACK_P2);
         GameState.resetShotsForTurn(GameState.getDifficulty());
 
         playerNameField.setText(GameState.getPlayer2Name());
@@ -45,8 +44,14 @@ public class Player2AttackController extends GameTableController {
         difficultyField.setText(GameState.getDifficulty());
         difficultyField.setEditable(false);
         attackingLabel.setText("Atacando a: " + GameState.getPlayer1Name());
+        
+        if (GameState.getCurrentPhase() == GameState.Phase.EXTRA_TURN){
+                difficultyField.setText("Turno Extra");
+        } else{
+            GameState.setCurrentPhase(GameState.Phase.ATTACK_P2);
+        }
 
-        btnChangePlayer.setDisable(true);
+        btnChangePlayer.setDisable(GameState.getRemainingShots() > 0);
 
         createAttackBoard(boardSize);
         Platform.runLater(() -> {
@@ -115,6 +120,24 @@ public class Player2AttackController extends GameTableController {
             case 0: return;
         }
 
+        if (GameState.getCurrentPhase() == GameState.Phase.EXTRA_TURN){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Turno finalizado");
+            alert.setHeaderText(null);
+            alert.setContentText(GameState.getPlayer2Name() + ", has usado tu turno adicional, ahora se presentaran los resultados de la partida.");
+            alert.showAndWait();
+            GameState.setCurrentPhase(GameState.Phase.GAME_OVER);
+        }        
+        
+        if (GameState.getCurrentPhase() == GameState.Phase.GAME_OVER) {
+            try {
+                handleGameOverScreen();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            return;
+        }
+        
         btn.setDisable(true);
         GameState.useShot();
 
@@ -140,6 +163,11 @@ public class Player2AttackController extends GameTableController {
     @FXML
     private void handleChangeScreen() throws IOException {
         App.setRoot("player2Board");
+    }
+    
+    @FXML
+    private void handleGameOverScreen() throws IOException {
+        App.setRoot("gameOverScreen");
     }
 
     @Override

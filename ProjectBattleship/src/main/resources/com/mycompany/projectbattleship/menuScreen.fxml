@@ -9,7 +9,7 @@
 
 <AnchorPane id="AnchorPane" prefHeight="850.0" prefWidth="1000.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.projectbattleship.MenuScreenController">
    <children>
-      <Button fx:id="btnPlay" layoutX="423.0" layoutY="382.0" mnemonicParsing="false" onAction="#play" prefHeight="49.0" prefWidth="165.0" styleClass="jfx-menubutton1" text="JUGAR">
+      <Button fx:id="btnPlay" layoutX="423.0" layoutY="382.0" mnemonicParsing="false" onAction="#play" prefHeight="49.0" prefWidth="165.0" text="JUGAR">
          <stylesheets>
             <URL value="@../../../styles/menuscreen.css" />
          </stylesheets>
@@ -21,7 +21,7 @@
          <cursor>
             <Cursor fx:constant="CROSSHAIR" />
          </cursor></Button>
-      <Button fx:id="btnExit" layoutX="423.0" layoutY="513.0" mnemonicParsing="false" onAction="#exit" prefHeight="49.0" prefWidth="165.0" styleClass="jfx-menubutton2" text="SALIR">
+      <Button fx:id="btnExit" layoutX="423.0" layoutY="513.0" mnemonicParsing="false" onAction="#exit" prefHeight="49.0" prefWidth="165.0" text="SALIR">
          <stylesheets>
             <URL value="@../../../styles/menuscreen.css" />
          </stylesheets>
@@ -29,7 +29,7 @@
             <Cursor fx:constant="CROSSHAIR" />
          </cursor>
       </Button>
-      <Text fill="WHITE" layoutX="291.0" layoutY="254.0" strokeType="OUTSIDE" strokeWidth="0.0" text="BATALLA NAVAL" wrappingWidth="424.529296875" AnchorPane.bottomAnchor="589.5087890625" AnchorPane.leftAnchor="291.0" AnchorPane.rightAnchor="292.0" AnchorPane.topAnchor="192.4912109375">
+      <Text fill="WHITE" layoutX="271.0" layoutY="259.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-title" text="BATALLA NAVAL" wrappingWidth="469.529296875">
          <font>
             <Font size="57.0" />
          </font>
@@ -39,6 +39,6 @@
       <URL value="@../../../styles/menuscreen.css" />
    </stylesheets>
    <cursor>
-      <Cursor fx:constant="CROSSHAIR" />
+      <Cursor fx:constant="DEFAULT" />
    </cursor>
 </AnchorPane>

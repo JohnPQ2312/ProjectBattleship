@@ -18,7 +18,7 @@
             <RadioButton fx:id="rbHard" mnemonicParsing="false" text="DIFICIL" textFill="WHITE" translateY="140.0" />
          </children>
       </VBox>
-      <Button fx:id="confirmButton" disable="true" layoutX="429.0" layoutY="602.0" mnemonicParsing="false" onAction="#confirmSelection" prefHeight="61.0" prefWidth="145.0" styleClass="button-text" stylesheets="@../../../styles/difficultyscreen.css" text="CONFIRMAR">
+      <Button fx:id="confirmButton" disable="true" layoutX="411.0" layoutY="602.0" mnemonicParsing="false" onAction="#confirmSelection" prefHeight="61.0" prefWidth="179.0" styleClass="button-text" stylesheets="@../../../styles/difficultyscreen.css" text="CONFIRMAR">
          <font>
             <Font size="18.0" />
          </font>

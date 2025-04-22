@@ -3,11 +3,44 @@
  */
 
 .anchor-pane {
-    -fx-background-color: #2E4053;
-    -fx-background-image: url("/images/menuScreenImage.png");
+    -fx-background-color: rgba(0, 0, 0, 0.5);
+    -fx-background-image: url("/images/menuScreenImageTransparentBlack.png");
     -fx-background-size: cover;
     -fx-background-position: center;
     -fx-border-color: white;
     -fx-border-width: 2px;
 }
 
+.button {
+    -fx-background-color: #2874A6;
+    -fx-padding: 10px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-border-color: white;    
+    -fx-border-width: 2px;
+    -fx-background-radius: 5px;
+    -fx-font-size: 24px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.8), 10, 0.5, 0, 0);
+}
+
+.button:hover {
+    -fx-background-color: #005c99;
+}
+
+.button:pressed {
+    -fx-translate-y: 2px;
+    -fx-background-color: #50b3f5;
+}
+
+.button:hover {
+    -fx-background-color: #1F618D;
+    -fx-cursor: crosshair;
+}
+
+.text-title {
+    -fx-font-size: 57px;
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}

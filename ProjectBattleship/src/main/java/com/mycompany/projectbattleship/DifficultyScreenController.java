@@ -53,7 +53,7 @@ public class DifficultyScreenController implements Initializable {
     }
     
     @FXML
-    private void confirmSelection() throws IOException {
+    private void confirmSelection() throws IOException { //Confirm and saves all user inputs and initializes boards or CPU if selected
         name = enterName.getText();
         name2 = enterName2.getText();
         
@@ -66,7 +66,13 @@ public class DifficultyScreenController implements Initializable {
         }
 
         GameState.setPlayer1Name(name);
-        GameState.setPlayer2Name(name2);
+        
+        if (enterName2.getText().isEmpty()){
+            GameState.setPlayer2Name("Jugador 2");
+        } else{
+            GameState.setPlayer2Name(name2);            
+        }
+ 
         GameState.setDifficulty(difficult);
         
         int boardSize = getBoardSize(difficult);
@@ -84,7 +90,7 @@ public class DifficultyScreenController implements Initializable {
         App.setRoot("Player1Board");
     }
 
-    private int getBoardSize(String difficulty) {
+    private int getBoardSize(String difficulty) { //Board size depending of selected difficulty
         switch (difficulty) {
             case "FACIL":
                 return 12;
@@ -97,7 +103,7 @@ public class DifficultyScreenController implements Initializable {
         }
     }
     
-    public void updateButtonState(String field, ToggleGroup rbGroup, Button confirmButton) {
+    public void updateButtonState(String field, ToggleGroup rbGroup, Button confirmButton) { //Update the status of the confirmation button whether or not the name and difficulty were selected
         Runnable updateState = () -> {
             boolean nameConfirmed = !field.isEmpty();
             boolean rbConfirmed = rbGroup.getSelectedToggle() != null;
@@ -108,7 +114,7 @@ public class DifficultyScreenController implements Initializable {
     }
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL url, ResourceBundle rb) { //Initializes and updates on screen buttons, selectors and fields
         rbGroup = new ToggleGroup();
         rbEasy.setToggleGroup(rbGroup);
         rbMedium.setToggleGroup(rbGroup);

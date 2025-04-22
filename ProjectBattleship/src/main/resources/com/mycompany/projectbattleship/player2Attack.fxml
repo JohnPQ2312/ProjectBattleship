@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="rootPane" prefHeight="850.0" prefWidth="1000.0" styleClass="mainFxmlClass" stylesheets="@../../../styles/player2attack.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.projectbattleship.Player2AttackController">
+<AnchorPane id="AnchorPane" fx:id="rootPane" prefHeight="850.0" prefWidth="1000.0" styleClass="anchor-pane" stylesheets="@../../../styles/player2attack.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.projectbattleship.Player2AttackController">
    <children>
       <GridPane fx:id="gridPane" layoutX="310.0" layoutY="325.0">
         <columnConstraints>
@@ -22,14 +22,14 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
       </GridPane>
-      <Label layoutX="61.0" layoutY="36.0" text="Nombre" />
+      <Label layoutX="61.0" layoutY="36.0" text="Nombre" textFill="WHITE" />
 
       <TextField fx:id="playerNameField" layoutX="9.0" layoutY="61.0" />
       <TextField fx:id="difficultyField" layoutX="9.0" layoutY="138.0" />
-      <Label layoutX="57.0" layoutY="113.0" text="Dificultad" />
-      <Button fx:id="btnChangeScreen" layoutX="883.0" layoutY="24.0" mnemonicParsing="false" onAction="#handleChangeScreen" text="Cambiar vista" />
-      <Button fx:id="btnChangePlayer" layoutX="874.0" layoutY="787.0" mnemonicParsing="false" onAction="#handleChangePlayer" text="Cambiar jugador" />
-      <Label fx:id="attackingLabel" layoutX="433.0" layoutY="39.0" text="Atacando a: ">
+      <Label layoutX="57.0" layoutY="113.0" text="Dificultad" textFill="WHITE" />
+      <Button fx:id="btnChangeScreen" layoutX="883.0" layoutY="16.0" mnemonicParsing="false" onAction="#handleChangeScreen" styleClass="buttonUI" stylesheets="@../../../styles/player2attack.css" text="Cambiar vista" />
+      <Button fx:id="btnChangePlayer" layoutX="865.0" layoutY="795.0" mnemonicParsing="false" onAction="#handleChangePlayer" styleClass="buttonUI" stylesheets="@../../../styles/player2attack.css" text="Cambiar jugador" />
+      <Label fx:id="attackingLabel" layoutX="433.0" layoutY="39.0" text="Atacando a: " textFill="WHITE">
          <font>
             <Font size="14.0" />
          </font>

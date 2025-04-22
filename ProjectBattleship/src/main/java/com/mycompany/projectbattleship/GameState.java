@@ -11,7 +11,7 @@ package com.mycompany.projectbattleship;
 public class GameState {
 
     public enum Phase {
-        PLACE_P1, PLACE_P2, ATTACK_P1, ATTACK_P2, EXTRA_TURN, GAME_OVER
+        PLACE_P1, PLACE_P2, ATTACK_P1, ATTACK_P2, EXTRA_TURN, GAME_OVER //Game phases
     }
 
     private static CPUPlayer cpuPlayer;
@@ -39,7 +39,7 @@ public class GameState {
     
     private static boolean shotsAssignedThisTurn = false;
 
-    public static void initBoards(int size) {
+    public static void initBoards(int size) { //Initialize P1 and P2 logic board with all cell values being 0
         boardSize = size;
         player1Board = new int[boardSize][boardSize];
         player2Board = new int[boardSize][boardSize];
@@ -58,7 +58,7 @@ public class GameState {
         return boardSize;
     }
 
-    public static void placeShip(int row, int col, int size, String orientation, int player) {
+    public static void placeShip(int row, int col, int size, String orientation, int player) { //Place ship on selected cells
         int[][] board = (player == 1) ? player1Board : player2Board;
         for (int i = 0; i < size; i++) {
             int r = row, c = col;
@@ -70,7 +70,7 @@ public class GameState {
         }
     } 
 
-    public static int attack(int attacker, int row, int col) {
+    public static int attack(int attacker, int row, int col) { //Attack selected cell of the enemy board
         int[][] enemyBoard = (attacker == 1) ? player2Board : player1Board;
         int result;
 
@@ -93,12 +93,12 @@ public class GameState {
             else               hitsP2++;
         }
 
-        evaluateEndGame(attacker);
+        evaluateEndGame(attacker); //Evaluates the conditions for finalizing the game
 
         return result;
     }
 
-    private static void evaluateEndGame(int attacker){
+    private static void evaluateEndGame(int attacker){ //Evaluates the conditions for finalizing the game
         if (shotLimit == 0) {
         shotLimit = calculateShotLimit();
         }    
@@ -109,16 +109,16 @@ public class GameState {
         int oppShots = (attacker == 1) ? shotsTakenP2 : shotsTakenP1;
         int other    = (attacker == 1) ? 2 : 1;
         
-        if (myHits >= TOTAL_SHIP_CELLS){
-            if (attacker == firstMover && !extraShotPhase){
+        if (myHits >= TOTAL_SHIP_CELLS){ //If hits of attacker equals total ship cells...
+            if (attacker == firstMover && !extraShotPhase){ //Search if attacker is P1 and it's not the extra shot phase for giving P2 a last chance
                 extraShotPhase = true;
                 currentPlayer = other;
                 currentPhase = Phase.EXTRA_TURN; 
-            } else{  
+            } else{  //If not, search if the player shots are equal for declarate a tie
                 if (hitsP1 == hitsP2) {
                     currentPhase = Phase.GAME_OVER;
                     winner = 0;
-                } else {
+                } else { //If not, then it shows the winner of the match
                     currentPhase = Phase.GAME_OVER;
                     winner = (hitsP1 > hitsP2) ? 1 : 2;
                 }
@@ -127,20 +127,28 @@ public class GameState {
             return;
         }
         
-        if (shotLimit > 0
-         && shotsTakenP1 >= shotLimit
-         && shotsTakenP2 >= shotLimit) {
-            if (hitsP1 == hitsP2) {
-                currentPhase = Phase.GAME_OVER;
+        if (attacker == 2 && extraShotPhase == true){ //(Used for a bug fix) If the attacker is P2, and uses it's last chance
+            if (hitsP1 == hitsP2) { //Search if the game ends with a tie
                 winner = 0;
             } else {
+                winner = (hitsP1 > hitsP2) ? 1 : 2; //Or with a winner
+            }
+        }
+        
+        if (shotLimit > 0 //(Weird case) Game ends if both players hit the shot limit of the game
+         && shotsTakenP1 >= shotLimit
+         && shotsTakenP2 >= shotLimit) {
+            if (hitsP1 == hitsP2) { //Search for a tie
+                currentPhase = Phase.GAME_OVER;
+                winner = 0;
+            } else { //Or a winner
                 currentPhase = Phase.GAME_OVER;
                 winner = (hitsP1 > hitsP2) ? 1 : 2;
             }
         }
     }
     
-    private static int calculateShotLimit() {
+    private static int calculateShotLimit() { //Calculates the shot limit of the game depending on the selected difficulty
         switch (difficulty.toUpperCase()) {
             case "FACIL": return 50;
             case "MEDIO": return 40;
@@ -149,11 +157,15 @@ public class GameState {
         }
     }
 
-    public static void useShot(){
+    public static void useShot(){ //Decrease remaining shots if used
         if (remainingShots > 0) remainingShots--;
     }
     
-    public static int manualGetShots(String difficulty){
+    public static int manualGetShots(String difficulty){ //Alternative of resetShotsForTurn
+        if (currentPhase == Phase.EXTRA_TURN) {
+            return 1;
+        }
+        
         switch (difficulty) {
             case "FACIL":
                 return 3;
@@ -164,10 +176,10 @@ public class GameState {
         }
     }
     
-    public static void resetShotsForTurn(String difficulty){
+    public static void resetShotsForTurn(String difficulty){ //Gives each player his shots, uses boolean to ensure that no turns are accidentally reassigned in the same turn.
         if (shotsAssignedThisTurn) return;
         
-        if (currentPhase == Phase.EXTRA_TURN) {
+        if (currentPhase == Phase.EXTRA_TURN) { //Last chance case
             remainingShots = 1;
             return;
         }
@@ -187,7 +199,7 @@ public class GameState {
         shotsAssignedThisTurn = true;
     }
     
-    public static String getAccuracy(int player) {
+    public static String getAccuracy(int player) { //Shot accuracy of each player for statistics
         int shots = getShotsTaken(player);
         int hits = getHits(player);
         if (shots == 0) return "0.0%";
@@ -195,7 +207,7 @@ public class GameState {
         return String.format("%.1f%%", accuracy);
     }
     
-    public static void resetAll() {
+    public static void resetAll() { //Reset all parameters when player wants to play again
         player1Name = "";
         player2Name = "";
         difficulty = "";
@@ -216,13 +228,17 @@ public class GameState {
 
     }
     
-    public static boolean isPvC() {
+    public static boolean isPvC() { //Boolean for activating methods and variables related with PvC mode
         return "Jugador vs CPU".equalsIgnoreCase(gameMode);
     }
     
-    public static void resetShotFlag() {
+    public static void resetShotFlag() { //Ensures not giving shots on same turn
         shotsAssignedThisTurn = false;
     }
+    
+    //
+    //Getters and setters...
+    //
     
     public static int getBoardCell(int player, int row, int col) {
         int[][] board = (player == 1) ? player1Board : player2Board;

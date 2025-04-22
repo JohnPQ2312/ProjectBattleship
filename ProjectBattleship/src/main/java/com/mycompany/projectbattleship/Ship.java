@@ -5,7 +5,7 @@
 package com.mycompany.projectbattleship;
 
 
-public class Ship {
+public class Ship { //Ship class with name, size and position
     private String name;
     private int size;
     private boolean h_pos;

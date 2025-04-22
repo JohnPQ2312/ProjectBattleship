@@ -27,7 +27,7 @@ import javafx.scene.layout.RowConstraints;
  * @author jp570
  */
 
-public class Player2BoardController extends GameTableController {
+public class Player2BoardController extends GameTableController { //P2 Board
     
     @FXML private RadioButton rbSubmarine, rbDestroyer, rbCruiser, rbBattleship;
     @FXML private Label orientation, subCount, destCount, cruisCount, b_shipCount;
@@ -42,7 +42,7 @@ public class Player2BoardController extends GameTableController {
     private int remainingBattleships = 1;
     private int currentPlayer = 2;
     
-    public void printTableTest(){ //Este metodo es para probar si el tablero se guarda logicamente
+    public void printTableTest(){ //Print second board on console for logic verification
         for (int row = 0; row < boardSize; row++) {
             for (int col = 0; col < boardSize; col++) {
                 
@@ -80,11 +80,11 @@ public class Player2BoardController extends GameTableController {
         
         btnChangeView.setDisable(isPlacement);        
         
-        if (isPlacement) {
+        if (isPlacement) { //Checks if phase is placement or not
             updateShipLabels();
             createBoard(boardSize);
         } else {
-            createObservationBoard(boardSize, GameState.getCurrentPlayer());
+            createObservationBoard(boardSize, GameState.getCurrentPlayer()); //If it's not placement, it creates an observation board for attack phase
         }   
         
         btnChangePlayer.setDisable(true);
@@ -97,7 +97,8 @@ public class Player2BoardController extends GameTableController {
         
     }
 
-    private void createObservationBoard(int size, int player) {
+    private void createObservationBoard(int size, int player) { //Read-only board showing own ships and shots of the enemy
+        //(For bug fix) Hide the change player button
         btnChangePlayer.setVisible(false);
         gridPane.getChildren().clear();
         gridPane.getColumnConstraints().clear();
@@ -113,7 +114,7 @@ public class Player2BoardController extends GameTableController {
             gridPane.getRowConstraints().add(rc);
         }
 
-        for (int r = 0; r < size; r++) {
+        for (int r = 0; r < size; r++) { //Create visible but disabled buttons, map-type for observating each own board
             for (int c = 0; c < size; c++) {
                 Button cell = new Button();
                 cell.setId(r + "," + c);
@@ -139,7 +140,7 @@ public class Player2BoardController extends GameTableController {
         }
     }    
     
-    private void setupShipButtons() {
+    private void setupShipButtons() { //Selected ship radio buttons
         shipGroup = new ToggleGroup();
         rbSubmarine.setToggleGroup(shipGroup);
         rbDestroyer.setToggleGroup(shipGroup);
@@ -154,7 +155,7 @@ public class Player2BoardController extends GameTableController {
         });
     }
     
-    private void updateShipLabels() {
+    private void updateShipLabels() { //Update ship lebels for showing remaining ships to be placed
         subCount.setText("Submarinos: " + remainingSubmarines);
         destCount.setText("Destructores: " + remainingDestroyers);
         cruisCount.setText("Cruceros: " + remainingCruisers);
@@ -163,7 +164,7 @@ public class Player2BoardController extends GameTableController {
     }
     
     @FXML
-    private void rotateShip() {
+    private void rotateShip() { //Ship rotation on placement
         if (selectedShip != null) {
             selectedShip.rotar();
             selectedOrientation = selectedShip.isHorizontal() ? "HORIZONTAL" : "VERTICAL";
@@ -172,7 +173,7 @@ public class Player2BoardController extends GameTableController {
     }
     
     @FXML
-    protected void handleCellClick(ActionEvent event) {
+    protected void handleCellClick(ActionEvent event) { //Cell click for board placement
         if (selectedShip == null || !hasRemainingShip(selectedShip)) return;
 
         Button btn = (Button) event.getSource();
@@ -180,7 +181,7 @@ public class Player2BoardController extends GameTableController {
         int row = Integer.parseInt(coords[0]);
         int col = Integer.parseInt(coords[1]);
 
-        if (canPlaceShip(row, col, selectedShip, selectedOrientation)) {
+        if (canPlaceShip(row, col, selectedShip, selectedOrientation)) { //Try normal placement
             placeShip(row, col, selectedShip, selectedOrientation);
             GameState.placeShip(row, col, selectedShip.getSize(), selectedOrientation, currentPlayer);
             updateShipCount(selectedShip);
@@ -188,7 +189,7 @@ public class Player2BoardController extends GameTableController {
             return;
         }
         
-        String oppositeOrientation = (selectedOrientation.equals("HORIZONTAL")) ? "REVERSE_HORIZONTAL" : "REVERSE_VERTICAL";
+        String oppositeOrientation = (selectedOrientation.equals("HORIZONTAL")) ? "REVERSE_HORIZONTAL" : "REVERSE_VERTICAL"; //Try reversed orientation
         if (canPlaceShip(row, col, selectedShip, oppositeOrientation)) {
             placeShip(row, col, selectedShip, oppositeOrientation);
             GameState.placeShip(row, col, selectedShip.getSize(), oppositeOrientation, currentPlayer);
@@ -197,14 +198,14 @@ public class Player2BoardController extends GameTableController {
         }
     }
     
-    private void checkIfPlacementFinished() {
+    private void checkIfPlacementFinished() { //Checks if all ships are placed, it activates change player button to start attack phase
        if (remainingSubmarines == 0 && remainingDestroyers == 0 &&
            remainingCruisers == 0 && remainingBattleships == 0) {
            btnChangePlayer.setDisable(false);
        }
     }
     
-    private boolean hasRemainingShip(Ship ship) {
+    private boolean hasRemainingShip(Ship ship) { 
         switch(ship.getName()) {
             case "Submarine": return remainingSubmarines > 0;
             case "Destroyer": return remainingDestroyers > 0;
@@ -214,7 +215,7 @@ public class Player2BoardController extends GameTableController {
         }
     }
 
-    private void updateShipCount(Ship ship) {
+    private void updateShipCount(Ship ship) { //Update ship counter for the placed type
         switch(ship.getName()) {
             case "Submarine":
                 remainingSubmarines--;
@@ -239,7 +240,7 @@ public class Player2BoardController extends GameTableController {
         }
     }
 
-    private boolean canPlaceShip(int row, int col, Ship ship, String orientation) {
+    private boolean canPlaceShip(int row, int col, Ship ship, String orientation) { //It verifies if the ship selected can be placed on the coordinate (or coordinates)
         int size = ship.getSize();
         switch (orientation) {
             case "HORIZONTAL":
@@ -268,7 +269,7 @@ public class Player2BoardController extends GameTableController {
         return true;
     }
 
-    private void placeShip(int row, int col, Ship ship, String orientation) {
+    private void placeShip(int row, int col, Ship ship, String orientation) { //Places the ship on the selected coordinate (or coordinates)
         int size = ship.getSize();
         String shipValue = String.valueOf(size);
         String shipColor = getShipColor(ship);
@@ -288,13 +289,13 @@ public class Player2BoardController extends GameTableController {
         }
     }
 
-    private String getShipColor(Ship ship) {
+    private String getShipColor(Ship ship) { //Ship color
         switch (ship.getSize()) {
-            case 1: return "#ff6666"; // Rojo para submarino
-            case 2: return "#66b3ff"; // Azul para destructor
-            case 3: return "#99ff99"; // Verde para crucero
-            case 4: return "#ffcc66"; // Amarillo para acorazado
-            default: return "#ffffff"; // Blanco por defecto
+            case 1: return "#ff6666";
+            case 2: return "#66b3ff";
+            case 3: return "#99ff99";
+            case 4: return "#ffcc66";
+            default: return "#ffffff";
         }
     }    
     
@@ -304,7 +305,7 @@ public class Player2BoardController extends GameTableController {
     }
     
     @FXML
-    private void handleChangePlayer() throws IOException {
+    private void handleChangePlayer() throws IOException { //Change screen to P1's board or attack
         GameState.setCurrentPlayer(1);
 
         if (GameState.getCurrentPhase() == GameState.Phase.PLACE_P2) {

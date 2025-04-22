@@ -26,7 +26,7 @@ import javafx.scene.layout.RowConstraints;
  *
  * @author jp570
  */
-public class Player1AttackController extends GameTableController {
+public class Player1AttackController extends GameTableController { //P1 attack board
 
     @FXML private Button btnChangePlayer, btnChangeScreen;
     @FXML private TextField playerNameField, difficultyField;
@@ -45,7 +45,7 @@ public class Player1AttackController extends GameTableController {
         playerNameField.setEditable(false);        
         difficultyField.setText(GameState.getDifficulty());
         difficultyField.setEditable(false);
-        attackingLabel.setText("Atacando a: " + GameState.getPlayer2Name());
+        attackingLabel.setText("Atacando a: " + (GameState.isPvC() ? "CPU" : GameState.getPlayer2Name()));
         
         btnChangePlayer.setDisable(GameState.getRemainingShots() > 0 || GameState.isPvC());
         
@@ -58,7 +58,7 @@ public class Player1AttackController extends GameTableController {
         });
     }
 
-    private void createAttackBoard(int size) {
+    private void createAttackBoard(int size) { //Creates an attack board, based on createBoard method
         
         gridPane.getChildren().clear();
         gridPane.getColumnConstraints().clear();
@@ -80,18 +80,18 @@ public class Player1AttackController extends GameTableController {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
                 Button cell = new Button();
-                cell.setId(row + "," + col);
+                cell.setId(row + "," + col); //ID coordinate
 
                 cell.setPrefSize(getCellSize(size), getCellSize(size));   
 
-                int value = GameState.getBoardCell(enemyPlayer, row, col);
-                switch (value) {
+                int value = GameState.getBoardCell(enemyPlayer, row, col); //It gets all the enemy ship positions
+                switch (value) { //All cells are the same color, it changes if the shot hit or failed
                     case -2:
                         cell.setStyle("-fx-background-color: red;");
                         cell.setDisable(true);
                         break;
                     case -1: 
-                        cell.setStyle("-fx-background-color: lightblue;");
+                        cell.setStyle("-fx-background-color: #008cff;");
                         cell.setDisable(true);
                         break;
                     default:
@@ -109,31 +109,37 @@ public class Player1AttackController extends GameTableController {
         }
     }
     
-    private void handleAttackClick(Button btn, int row, int col) {
+    private void handleAttackClick(Button btn, int row, int col) { //Executes the attack per each cell clicked
         if (GameState.getRemainingShots() <= 0) return;
 
-        int result = GameState.attack(currentPlayer, row, col);
+        int result = GameState.attack(currentPlayer, row, col); //Shows the result of the shot
 
         switch (result) {
             case -2: btn.setStyle("-fx-background-color: red;"); break;
-            case -1: btn.setStyle("-fx-background-color: lightblue;"); break;
+            case -1: btn.setStyle("-fx-background-color: #008cff;"); break;
             case 0: return;
         }
 
-        if (GameState.getCurrentPhase() == GameState.Phase.EXTRA_TURN){
+        if (GameState.getCurrentPhase() == GameState.Phase.EXTRA_TURN){ //Evaluates if the game is on enemy's extra turn
             try {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Turno finalizado");
                 alert.setHeaderText(null);
                 alert.setContentText(GameState.getPlayer1Name() + ", destruiste todos los barcos, pero al ser tu el del golpe de gracia, al oponente se le otorgará un disparo adicional.");
                 alert.showAndWait();
-                App.setRoot("player2Attack");
+                
+                if (GameState.isPvC()){
+                    runCpuTurn();
+                } else{
+                    App.setRoot("player2Attack");
+                }
+                
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
         
-        if (GameState.getCurrentPhase() == GameState.Phase.GAME_OVER) {
+        if (GameState.getCurrentPhase() == GameState.Phase.GAME_OVER) { //Evaluates if the game ended
             try {
                 handleGameOverScreen();
             } catch (IOException ex) {
@@ -145,9 +151,9 @@ public class Player1AttackController extends GameTableController {
         btn.setDisable(true);
         GameState.useShot();
 
-        if (GameState.getRemainingShots() == 0) {
+        if (GameState.getRemainingShots() == 0) { //If the attacker uses all it's shots, it continues to the next turn (P2 or CPU)
             if (GameState.isPvC()) {
-                runCpuTurn();
+                runCpuTurn(); //CPU execute it's turn
             } else {
                 btnChangePlayer.setDisable(false);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -166,7 +172,17 @@ public class Player1AttackController extends GameTableController {
         for (int i = 0; i < shots; i++) {
             int[] move = cpu.makeMove();
             GameState.attack(2, move[0], move[1]);
-            if (GameState.getCurrentPhase() == GameState.Phase.GAME_OVER) {
+
+            if (GameState.getCurrentPhase() == GameState.Phase.EXTRA_TURN){ //Evaluates if extra turn is used on each shot
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Turno finalizado");
+                alert.setHeaderText(null);
+                alert.setContentText("CPU ha usado su turno adicional, ahora se presentaran los resultados de la partida.");
+                alert.showAndWait();
+                GameState.setCurrentPhase(GameState.Phase.GAME_OVER);
+            }  
+
+            if (GameState.getCurrentPhase() == GameState.Phase.GAME_OVER) { //Evaluates if game ends
                 try {
                     App.setRoot("gameOverScreen");
                 } catch (IOException e) {
@@ -174,9 +190,10 @@ public class Player1AttackController extends GameTableController {
                 }
                 return;
             }
-        }
+            
+        }        
 
-        GameState.setCurrentPlayer(1);
+        GameState.setCurrentPlayer(1); //Return to P1's turn
         GameState.setCurrentPhase(GameState.Phase.ATTACK_P1);
         GameState.resetShotFlag();
         GameState.resetShotsForTurn(GameState.getDifficulty());
@@ -195,7 +212,7 @@ public class Player1AttackController extends GameTableController {
     }    
 
     @FXML
-    private void handleChangePlayer() throws IOException {
+    private void handleChangePlayer() throws IOException { //Change screen and turn to P2
         GameState.setCurrentPlayer(enemyPlayer);
         GameState.setCurrentPhase(GameState.Phase.ATTACK_P2);
         GameState.resetShotFlag();
@@ -204,17 +221,17 @@ public class Player1AttackController extends GameTableController {
     }
 
     @FXML
-    private void handleChangeScreen() throws IOException {
+    private void handleChangeScreen() throws IOException { //Observate board
         App.setRoot("player1Board");
     }
 
     @FXML
-    private void handleGameOverScreen() throws IOException {
+    private void handleGameOverScreen() throws IOException { //Change to game over
         App.setRoot("gameOverScreen");
     }    
     
     @Override
-    protected void handleCellClick(ActionEvent event) {
+    protected void handleCellClick(ActionEvent event) { //Not used
         
     }
 }

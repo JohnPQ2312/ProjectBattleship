@@ -18,7 +18,7 @@ import javafx.scene.control.Label;
  * @author jp570
  */
 
-public class GameOverScreenController {
+public class GameOverScreenController { //Game Over screen controller
     @FXML private Label resultLabel;
     @FXML private Label statsLabel;
 

@@ -20,7 +20,7 @@ import javafx.scene.layout.AnchorPane;
 public class AboutScreenController implements Initializable {
 
     @FXML
-    private void backAbout() throws IOException{
+    private void backAbout() throws IOException{ //Back to menu option
         App.setRoot("menuScreen");
     }
     

@@ -21,7 +21,7 @@ import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 
-public abstract class GameTableController implements Initializable{
+public abstract class GameTableController implements Initializable{ //Father class for board related methods (Visuals)
     @FXML protected AnchorPane rootPane;
     @FXML protected GridPane gridPane;
     @FXML protected TextField playerNameField, difficultyField;
@@ -35,12 +35,12 @@ public abstract class GameTableController implements Initializable{
         boardSize = size;
     }
 
-    protected boolean isCellAvailable(int row, int col) {
+    protected boolean isCellAvailable(int row, int col) { //Checks if the cell selected is available for use
         Button cell = getCellButton(row, col);
         return cell != null && cell.getText().isEmpty();
     }
 
-    protected Button getCellButton(int row, int col) {
+    protected Button getCellButton(int row, int col) { //Getter of selected button on gridpane
         for (Node node : gridPane.getChildren()) {
             if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
                 GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {
@@ -50,13 +50,13 @@ public abstract class GameTableController implements Initializable{
         return null;
     }
     
-    protected void createBoard(int size) {
+    protected void createBoard(int size) { //Creates a gridpane using the size established earlier on the difficulty screen
         gridPane.getChildren().clear();
         gridPane.setGridLinesVisible(true);
         gridPane.getColumnConstraints().clear();
         gridPane.getRowConstraints().clear();
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) { //Row and col sizes
             ColumnConstraints colConstraints = new ColumnConstraints();
             colConstraints.setPercentWidth(100.0 / size);
             colConstraints.setHgrow(Priority.ALWAYS);
@@ -69,7 +69,7 @@ public abstract class GameTableController implements Initializable{
         }
 
         for (int row = 0; row < size; row++) {
-            for (int col = 0; col < size; col++) {
+            for (int col = 0; col < size; col++) { //Puts a button on each cell
                 Button button = new Button();
                 button.setId(row + "," + col);
                 button.setPrefSize(getCellSize(size), getCellSize(size));
@@ -77,14 +77,14 @@ public abstract class GameTableController implements Initializable{
                 GridPane.setHalignment(button, HPos.CENTER);
                 GridPane.setValignment(button, VPos.CENTER);
 
-                configureCellButton(button, row, col);
+                configureCellButton(button, row, col); //Configures each button
                 
                 gridPane.add(button, col, row);
             }
         }
     }
     
-    protected int getCellSize(int size) {
+    protected int getCellSize(int size) { //Sets cell size for better visualization of the board
         switch (size) {
             case 12: return 51;
             case 16: return 41;
@@ -93,11 +93,11 @@ public abstract class GameTableController implements Initializable{
         }
     }
     
-    protected void configureCellButton(Button button, int row, int col) {
+    protected void configureCellButton(Button button, int row, int col) { //Sets on each button a action by clicking on them
         button.setOnAction(event -> handleCellClick(event));
     }
     
-    protected void centerBoard() {
+    protected void centerBoard() { //Method for centering the board (sometimes it doesn't work properly)
         double paneWidth = rootPane.getWidth();
         double paneHeight = rootPane.getHeight();
         double gridWidth = gridPane.getBoundsInParent().getWidth();

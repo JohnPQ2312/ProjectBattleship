@@ -17,7 +17,7 @@ import javafx.scene.control.Button;
  *
  * @author jp570
  */
-public class MenuScreenController implements Initializable {
+public class MenuScreenController implements Initializable { //Menu Screen controller
     
     @FXML
     private Button btnExit, btnPlay, btnAbout;

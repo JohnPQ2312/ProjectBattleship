@@ -26,7 +26,7 @@ import javafx.scene.layout.RowConstraints;
  *
  * @author jp570
  */
-public class Player2AttackController extends GameTableController {
+public class Player2AttackController extends GameTableController { //P2 attack board
     @FXML private Button btnChangePlayer, btnChangeScreen;
     @FXML private TextField playerNameField, difficultyField;
     @FXML private Label attackingLabel;
@@ -61,7 +61,7 @@ public class Player2AttackController extends GameTableController {
         });
     }
 
-    private void createAttackBoard(int size) {
+    private void createAttackBoard(int size) { //Creates an attack board, based on createBoard method
         gridPane.getChildren().clear();
         gridPane.getColumnConstraints().clear();
         gridPane.getRowConstraints().clear();
@@ -82,17 +82,17 @@ public class Player2AttackController extends GameTableController {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
                 Button cell = new Button();
-                cell.setId(row + "," + col);
+                cell.setId(row + "," + col); //ID coordinate
                 cell.setPrefSize(getCellSize(size), getCellSize(size));
 
-                int value = GameState.getBoardCell(enemyPlayer, row, col);
-                switch (value) {
+                int value = GameState.getBoardCell(enemyPlayer, row, col); //It gets all the enemy ship positions
+                switch (value) { //All cells are the same color, it changes if the shot hit or failed
                     case -2:
                         cell.setStyle("-fx-background-color: red;");
                         cell.setDisable(true);
                         break;
                     case -1:
-                        cell.setStyle("-fx-background-color: lightblue;");
+                        cell.setStyle("-fx-background-color: #008cff;");
                         cell.setDisable(true);
                         break;
                     default:
@@ -110,17 +110,17 @@ public class Player2AttackController extends GameTableController {
         }
     }
 
-    private void handleAttackClick(Button btn, int row, int col) {
+    private void handleAttackClick(Button btn, int row, int col) { //Executes the attack per each cell clicked
         if (GameState.getRemainingShots() <= 0) return;
 
-        int result = GameState.attack(currentPlayer, row, col);
+        int result = GameState.attack(currentPlayer, row, col); //Shows the result of the shot
         switch (result) {
             case -2: btn.setStyle("-fx-background-color: red;"); break;
-            case -1: btn.setStyle("-fx-background-color: lightblue;"); break;
+            case -1: btn.setStyle("-fx-background-color: #008cff;"); break;
             case 0: return;
         }
 
-        if (GameState.getCurrentPhase() == GameState.Phase.EXTRA_TURN){
+        if (GameState.getCurrentPhase() == GameState.Phase.EXTRA_TURN){ //Evaluates if the game is on P2's extra turn
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Turno finalizado");
             alert.setHeaderText(null);
@@ -129,7 +129,7 @@ public class Player2AttackController extends GameTableController {
             GameState.setCurrentPhase(GameState.Phase.GAME_OVER);
         }        
         
-        if (GameState.getCurrentPhase() == GameState.Phase.GAME_OVER) {
+        if (GameState.getCurrentPhase() == GameState.Phase.GAME_OVER) { //Evaluates if the game ended
             try {
                 handleGameOverScreen();
             } catch (IOException ex) {
@@ -141,7 +141,7 @@ public class Player2AttackController extends GameTableController {
         btn.setDisable(true);
         GameState.useShot();
 
-        if (GameState.getRemainingShots() == 0) {
+        if (GameState.getRemainingShots() == 0) { //If the attacker uses all it's shots, it continues to the next turn
             btnChangePlayer.setDisable(false);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Turno finalizado");
@@ -152,7 +152,7 @@ public class Player2AttackController extends GameTableController {
     }
 
     @FXML
-    private void handleChangePlayer() throws IOException {
+    private void handleChangePlayer() throws IOException { //Change screen and turn to P1
         GameState.setCurrentPlayer(enemyPlayer);
         GameState.setCurrentPhase(GameState.Phase.ATTACK_P1);
         GameState.resetShotFlag();
@@ -161,17 +161,17 @@ public class Player2AttackController extends GameTableController {
     }
 
     @FXML
-    private void handleChangeScreen() throws IOException {
+    private void handleChangeScreen() throws IOException { //Observate board
         App.setRoot("player2Board");
     }
     
     @FXML
-    private void handleGameOverScreen() throws IOException {
+    private void handleGameOverScreen() throws IOException { //Change to game over
         App.setRoot("gameOverScreen");
     }
 
     @Override
-    protected void handleCellClick(ActionEvent event) {
+    protected void handleCellClick(ActionEvent event) { //Not used
         
     }
 }

@@ -2,6 +2,34 @@
  * Empty Stylesheet file.
  */
 
-.mainFxmlClass {
+.anchor-pane {
+    -fx-background-color: #333333;
+    -fx-background-size: cover;
+    -fx-background-position: center;
+    -fx-border-color: white;
+    -fx-border-width: 2px;
+}
 
+.buttonUI {
+    -fx-background-color: #2874A6;
+    -fx-padding: 10px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-border-color: white;    
+    -fx-border-width: 2px;
+    -fx-background-radius: 5px;
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.8), 10, 0.5, 0, 0);
+}
+
+.buttonUI:pressed {
+    -fx-translate-y: 2px;
+    -fx-background-color: #50b3f5;
+}
+
+.buttonUI:hover {
+    -fx-background-color: #1F618D;
+    -fx-cursor: crosshair;
 }

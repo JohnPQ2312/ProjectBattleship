@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import java.io.IOException;
 
-public class App extends Application {
+public class App extends Application { //Program start class
 
     private static Scene scene;
 
@@ -16,10 +16,10 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("menuScreen"));
         stage.setScene(scene);
-        var appIcon = new Image("/images/ship.png");
+        var appIcon = new Image("/images/ship.png"); //Window icon
         stage.getIcons().add(appIcon);
-        stage.setTitle("Batalla Naval");
-        stage.setResizable(false);
+        stage.setTitle("Batalla Naval"); //Window Title
+        stage.setResizable(false); //Resizable by user = false
         stage.show();
     }
 
